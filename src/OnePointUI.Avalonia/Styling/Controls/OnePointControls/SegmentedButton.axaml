@@ -1,0 +1,254 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:OnePointUI.Avalonia.Styling.Controls.OnePointControls">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <controls:SegmentedButton SelectedIndex="0">
+                <controls:SegmentedButtonItem Content="Classic" />
+                <controls:SegmentedButtonItem Content="Bedrock" />
+                <controls:SegmentedButtonItem Content="Developer" />
+            </controls:SegmentedButton>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="controls|SegmentedButton">
+        <Setter Property="MinHeight" Value="44" />
+        <Setter Property="Padding" Value="3" />
+        <Setter Property="Background" Value="{DynamicResource AccentBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="2" />
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border CornerRadius="{TemplateBinding CornerRadius}"
+                        ClipToBounds="True">
+                    <Grid>
+                        <Border Name="PART_Backdrop"
+                                Background="{DynamicResource BackgroundBrush}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Opacity="0.45"
+                                IsHitTestVisible="False">
+                            <Border Name="PART_AccentTint"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Opacity="0.30" />
+                        </Border>
+
+                        <Border Padding="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                ClipToBounds="True">
+                            <ScrollViewer Name="PART_ScrollViewer"
+                                          ClipToBounds="True"
+                                          HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                                          VerticalScrollBarVisibility="Disabled"
+                                          IsScrollChainingEnabled="{TemplateBinding (ScrollViewer.IsScrollChainingEnabled)}"
+                                          IsScrollInertiaEnabled="{TemplateBinding (ScrollViewer.IsScrollInertiaEnabled)}"
+                                          BringIntoViewOnFocusChange="True">
+                                <ItemsPresenter Name="PART_ItemsPresenter"
+                                                ItemsPanel="{TemplateBinding ItemsPanel}" />
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|SegmentedButtonItem">
+        <Setter Property="MinWidth" Value="56" />
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="ClipToBounds" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Border Name="PART_SelectedSurface"
+                            Background="{DynamicResource AccentSubtleBrush}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.18"
+                                                  Easing="QuinticEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+
+                    <Border Name="PART_HoverSurface"
+                            Background="{DynamicResource PrimaryBackgroundOverBrush}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.18"
+                                                  Easing="QuinticEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+
+                    <Border Name="PART_SelectedHoverSurface"
+                            Background="{DynamicResource AccentSubtleHoverBrush}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.18"
+                                                  Easing="QuinticEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+
+                    <Border Name="PART_PressedSurface"
+                            Background="{DynamicResource PrimaryBackgroundPressedBrush}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.08" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+
+                    <Border Name="PART_SelectedPressedSurface"
+                            Background="{DynamicResource AccentSubtlePressedBrush}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.08" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+
+                    <controls:PointHalo Name="PART_PointHalo"
+                                        CornerRadius="{TemplateBinding CornerRadius}" />
+
+                    <Border Name="PART_Focus"
+                            Margin="1"
+                            CornerRadius="5"
+                            BorderBrush="{DynamicResource AccentBackgroundBrush}"
+                            BorderThickness="1"
+                            Opacity="0"
+                            IsHitTestVisible="False" />
+
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Padding="{TemplateBinding Padding}"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      IsHitTestVisible="False"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+
+                    <Border Name="PART_SelectionIndicator"
+                            Width="0"
+                            Height="3"
+                            Margin="0,0,0,3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            CornerRadius="2"
+                            Background="{DynamicResource AccentBackgroundBrush}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Width"
+                                                  Duration="0:0:0.2"
+                                                  Easing="ExponentialEaseOut" />
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.14" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover /template/ Border#PART_HoverSurface">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#PART_HoverSurface">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#PART_PressedSurface">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:focus-visible /template/ Border#PART_Focus">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:selected">
+            <Setter Property="Foreground" Value="{DynamicResource AccentBackgroundBrush}" />
+
+            <Style Selector="^ /template/ Border#PART_SelectedSurface">
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ Border#PART_HoverSurface">
+                <Setter Property="Opacity" Value="0" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ Border#PART_SelectedHoverSurface">
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <Style Selector="^:pressed /template/ Border#PART_SelectedHoverSurface">
+                <Setter Property="Opacity" Value="0" />
+            </Style>
+
+            <Style Selector="^:pressed /template/ Border#PART_PressedSurface">
+                <Setter Property="Opacity" Value="0" />
+            </Style>
+
+            <Style Selector="^:pressed /template/ Border#PART_SelectedPressedSurface">
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#PART_SelectionIndicator">
+                <Setter Property="Width" Value="20" />
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ Border#PART_SelectionIndicator">
+                <Setter Property="Width" Value="28" />
+            </Style>
+
+            <Style Selector="^:pressed /template/ Border#PART_SelectionIndicator">
+                <Setter Property="Width" Value="14" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryDisabledForegroundBrush}" />
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+    </Style>
+</Styles>

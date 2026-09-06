@@ -1,10 +1,10 @@
-﻿using System.Runtime.InteropServices.JavaScript;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives; // 引入 TemplatedControl 相关的命名空间
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Styling;
 
 namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls;
 
@@ -97,6 +97,8 @@ public class SettingCard : ContentControl
         if (_rootBorder != null)
         {
             _rootBorder.PointerPressed += RootBorder_PointerPressed;
+            _rootBorder.PointerReleased += RootBorder_PointerReleased;
+            _rootBorder.PointerCaptureLost += RootBorder_PointerCaptureLost;
         }
 
         var contentPresenter = e.NameScope.Find<ContentControl>("ActionContentControl");
@@ -120,5 +122,16 @@ public class SettingCard : ContentControl
     {
         // 触发 Click 事件，这样外部就可以像订阅 Button.Click 一样订阅 SettingCard.Click
         Click?.Invoke(this, new RoutedEventArgs());
+        PseudoClasses.Set(":pressed", true);
+    }
+
+    private void RootBorder_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        PseudoClasses.Set(":pressed", false);
+    }
+
+    private void RootBorder_PointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+    {
+        PseudoClasses.Set(":pressed", false);
     }
 }

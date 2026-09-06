@@ -35,7 +35,10 @@ namespace OnePointUI.Avalonia.Behaviors
         {
             if ((bool)e.NewValue!)
             {
-                sv.AddHandler(InputElement.PointerWheelChangedEvent, OnPointerWheelChanged, RoutingStrategies.Tunnel);
+                // Bubble lets the innermost ScrollViewer consume the wheel event first.
+                // Tunnel routing caused an outer page ScrollViewer to scroll before
+                // ComboBox popup lists and other nested scrollers saw the event.
+                sv.AddHandler(InputElement.PointerWheelChangedEvent, OnPointerWheelChanged, RoutingStrategies.Bubble);
                 sv.DetachedFromVisualTree += OnDetachedFromVisualTree;
             }
             else

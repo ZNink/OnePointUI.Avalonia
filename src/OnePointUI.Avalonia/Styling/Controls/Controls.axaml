@@ -61,6 +61,7 @@
 
     <StyleInclude Source="OnePointControls/LineTextBlock.axaml" />
     <StyleInclude Source="OnePointControls/FontIcon.axaml" />
+    <StyleInclude Source="OnePointControls/SegmentedButton.axaml" />
     <StyleInclude Source="OnePointControls/SettingCard.axaml" />
     <StyleInclude Source="OnePointControls/SettingExpander.axaml" />
     <StyleInclude Source="OnePointControls/LabelBox.axaml" />

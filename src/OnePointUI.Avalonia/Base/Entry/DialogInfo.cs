@@ -12,6 +12,7 @@ public class DialogInfo
     public Action? CloseAction { get; set; }
     public Action? PrimaryAction { get; set; }
     public Action? SecondaryAction { get; set; }
+    public bool CloseOnAction { get; set; } = true;
     public DialogButtons AccountButton { get; set; } = DialogButtons.CloseButton;
     public bool IsWindow { get; set; } = false;
 }

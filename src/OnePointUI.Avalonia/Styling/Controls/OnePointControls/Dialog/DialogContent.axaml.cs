@@ -56,19 +56,28 @@ public partial class DialogContent : UserControl
 
     private void CloseBtn_OnClick(object? sender, RoutedEventArgs e)
     {
-        DialogHost.Close();
+        if (_info.CloseOnAction)
+        {
+            DialogHost.Close();
+        }
         _info.CloseAction?.Invoke();
     }
 
     private void PrimaryBtn_OnClick(object? sender, RoutedEventArgs e)
     {
-        DialogHost.Close();
+        if (_info.CloseOnAction)
+        {
+            DialogHost.Close();
+        }
         _info.PrimaryAction?.Invoke();
     }
 
     private void SecondaryBtn_OnClick(object? sender, RoutedEventArgs e)
     {
-        DialogHost.Close();
+        if (_info.CloseOnAction)
+        {
+            DialogHost.Close();
+        }
         _info.SecondaryAction?.Invoke();
     }
 }
