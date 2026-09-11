@@ -1,0 +1,28 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:rail="using:OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation.NavigationRail">
+    <Design.PreviewWith>
+        <Border Padding="20" Width="220">
+            <StackPanel Spacing="8">
+                <TextBlock Text="上方象限" />
+                <rail:OnePointNavigationRailSeparator />
+                <TextBlock Text="下方象限" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- 象限分隔线：仅表达分组节奏，颜色走主题边框令牌 -->
+    <Style Selector="rail|OnePointNavigationRailSeparator">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="10,6" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Height="{TemplateBinding Height}"
+                        Background="{DynamicResource PrimaryBorderBrush}"
+                        Opacity="0.6"
+                        CornerRadius="1" />
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

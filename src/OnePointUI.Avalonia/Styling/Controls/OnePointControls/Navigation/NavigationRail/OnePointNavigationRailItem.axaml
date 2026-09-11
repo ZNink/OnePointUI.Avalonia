@@ -1,0 +1,322 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:onePointControls="clr-namespace:OnePointUI.Avalonia.Styling.Controls.OnePointControls"
+        xmlns:rail="using:OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation.NavigationRail">
+    <Design.PreviewWith>
+        <Border Padding="20" Width="260">
+            <StackPanel Spacing="4">
+                <rail:OnePointNavigationRailItem Glyph="&#xE80F;" ItemText="主页" NavigationKey="Home" IsSelected="True" />
+                <rail:OnePointNavigationRailItem Glyph="&#xE74C;" ItemText="扩展" NavigationKey="Extensions" BadgeText="3" />
+                <rail:OnePointNavigationRailItem Glyph="&#xE90F;" ItemText="工具" NavigationKey="Tools" IsCompact="True" />
+                <rail:OnePointNavigationRailItem Glyph="&#xE719;" ItemText="市场" NavigationKey="Market" IsEnabled="False" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!--
+        激发象限导航项：
+        · 选中 = 3px 渐变指示条 + 强调色底 + 图标着色 + 文字加粗（形状与字重同时变化，不依赖颜色单独传达状态）
+        · 悬停 = 轻背景 + 图标 2px 位移
+        · 按下 = 0.985 轻微缩放
+        · 键盘焦点 = 2px 强调色轮廓（:focus-visible）
+        · 折叠 = 只保留图标，标题通过 ToolTip 与无障碍名称暴露
+    -->
+    <Style Selector="rail|OnePointNavigationRailItem">
+        <Setter Property="Height" Value="44" />
+        <Setter Property="MinHeight" Value="44" />
+        <Setter Property="CornerRadius" Value="11" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Foreground" Duration="0:0:0.1" />
+            </Transitions>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Name="PART_Root"
+                       Background="Transparent"
+                       RenderTransformOrigin="0.5,0.5">
+                    <Panel.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform"
+                                                           Duration="0:0:0.1"
+                                                           Easing="QuinticEaseOut" />
+                        </Transitions>
+                    </Panel.Transitions>
+
+                    <Border Name="PART_Glow"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Background="{DynamicResource NavigationRailGlowBrush}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.22" Easing="ExponentialEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+
+                    <Border Name="PART_Hover"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Background="{DynamicResource BackgroundHoverBrush}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1" Easing="QuinticEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+
+                    <Border Name="PART_Selected"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Background="{DynamicResource NavigationRailSelectedBrush}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.18" Easing="ExponentialEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+
+                    <!-- 象限焦点：3px 渐变指示条，选中时从 0 宽滑入 -->
+                    <Border Name="PART_Indicator"
+                            Width="0"
+                            Margin="0,10"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Stretch"
+                            CornerRadius="2"
+                            Background="{DynamicResource NavigationRailIndicatorBrush}"
+                            IsVisible="{TemplateBinding ShowIndicator}"
+                            Opacity="0"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Width" Duration="0:0:0.18" Easing="QuarticEaseOut" />
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.16" Easing="ExponentialEaseOut" />
+                                <ThicknessTransition Property="Margin" Duration="0:0:0.18" Easing="QuarticEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+
+                    <Border Name="PART_Focus"
+                            Margin="1"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            BorderBrush="{DynamicResource AccentBackgroundBrush}"
+                            BorderThickness="2"
+                            Opacity="0"
+                            IsHitTestVisible="False" />
+
+                    <Grid Name="PART_Content"
+                          Margin="10,0"
+                          ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="10">
+                        <Grid.Transitions>
+                            <Transitions>
+                                <ThicknessTransition Property="Margin" Duration="0:0:0.2" Easing="ExponentialEaseOut" />
+                            </Transitions>
+                        </Grid.Transitions>
+
+                        <Panel Name="PART_IconHost"
+                               Grid.Column="0"
+                               Width="20"
+                               Height="20"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center">
+                            <onePointControls:FontIcon Name="PART_Icon"
+                                                       Glyph="{TemplateBinding Glyph}"
+                                                       Foreground="{TemplateBinding Foreground}"
+                                                       FontSize="18"
+                                                       IsVisible="{TemplateBinding HasGlyphIcon}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                            <!-- 可选：Avalonia PathIcon 等矢量图标，替代字形图标，始终几何居中 -->
+                            <ContentPresenter Name="PART_CustomIcon"
+                                              Content="{TemplateBinding Icon}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              HorizontalContentAlignment="Center"
+                                              VerticalContentAlignment="Center"
+                                              IsVisible="{TemplateBinding HasCustomIcon}"
+                                              IsHitTestVisible="False" />
+                            <Ellipse Name="PART_StatusDot"
+                                     Width="9"
+                                     Height="9"
+                                     Margin="0,0,-2,-2"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Bottom"
+                                     IsVisible="{TemplateBinding ShowStatusDot}"
+                                     Fill="{DynamicResource NavigationRailStatusDotBrush}"
+                                     Stroke="{DynamicResource NavigationRailBackgroundBrush}"
+                                     StrokeThickness="2" />
+                            <!-- 折叠态徽标提示：数字徽标收窄为图标右上角的强调色圆点 -->
+                            <Ellipse Name="PART_CompactBadgeDot"
+                                     Width="8"
+                                     Height="8"
+                                     Margin="2,-2,-2,0"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Top"
+                                     IsVisible="False"
+                                     Fill="{DynamicResource AccentBackgroundBrush}"
+                                     Stroke="{DynamicResource NavigationRailBackgroundBrush}"
+                                     StrokeThickness="1.5" />
+                        </Panel>
+
+                        <TextBlock Name="PART_Text"
+                                   Grid.Column="1"
+                                   Text="{TemplateBinding ItemText}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   FontSize="13"
+                                   TextTrimming="CharacterEllipsis"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center" />
+
+                        <Panel Name="PART_BadgeHost"
+                               Grid.Column="2"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right">
+                            <Border Name="PART_Badge"
+                                    MinWidth="18"
+                                    Height="18"
+                                    Padding="5,0"
+                                    CornerRadius="9"
+                                    Background="{DynamicResource AccentBackgroundBrush}"
+                                    IsVisible="{TemplateBinding HasBadge}">
+                                <TextBlock Text="{TemplateBinding BadgeText}"
+                                           Foreground="{DynamicResource AccentForegroundBrush}"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <Ellipse Name="PART_BadgeDot"
+                                     Width="8"
+                                     Height="8"
+                                     IsVisible="{TemplateBinding ShowBadgeDot}"
+                                     Fill="{DynamicResource SystemFillColorCriticalBrush}" />
+                        </Panel>
+                    </Grid>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#PART_Hover">
+            <Setter Property="Opacity" Value="0.62" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Panel#PART_IconHost">
+            <Setter Property="Margin" Value="2,0,0,0" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Panel#PART_Root">
+            <Setter Property="RenderTransform" Value="scale(0.985)" />
+        </Style>
+
+        <Style Selector="^:focus-visible /template/ Border#PART_Focus">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:selected">
+            <Setter Property="Foreground" Value="{DynamicResource AccentBackgroundBrush}" />
+        </Style>
+
+        <Style Selector="^:selected /template/ Border#PART_Hover">
+            <Setter Property="Opacity" Value="0.35" />
+        </Style>
+
+        <Style Selector="^:selected /template/ Border#PART_Selected">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:selected /template/ Border#PART_Glow">
+            <Setter Property="Opacity" Value="0.9" />
+        </Style>
+
+        <Style Selector="^:selected /template/ Border#PART_Indicator">
+            <Setter Property="Width" Value="3" />
+            <Setter Property="Margin" Value="4,8" />
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:selected /template/ TextBlock#PART_Text">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <!-- 折叠态：只保留图标与状态点，图标居中，标题交给 ToolTip / 无障碍名称 -->
+        <Style Selector="^:compact /template/ Grid#PART_Content">
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <Style Selector="^:compact /template/ Panel#PART_IconHost">
+            <Setter Property="Grid.Column" Value="1" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="^:compact /template/ TextBlock#PART_Text">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <Style Selector="^:compact /template/ Panel#PART_BadgeHost">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <Style Selector="^:compact /template/ Ellipse#PART_CompactBadgeDot">
+            <Setter Property="IsVisible"
+                    Value="{Binding HasIndicatorBadge, RelativeSource={RelativeSource TemplatedParent}}" />
+        </Style>
+
+        <Style Selector="^:compact:pointerover /template/ Panel#PART_IconHost">
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <!-- 状态点：语义色调全部走平台状态令牌 -->
+        <Style Selector="^:tone-none /template/ Ellipse#PART_StatusDot">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <Style Selector="^:tone-success /template/ Ellipse#PART_StatusDot">
+            <Setter Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+        </Style>
+
+        <Style Selector="^:tone-warning /template/ Ellipse#PART_StatusDot">
+            <Setter Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
+        </Style>
+
+        <Style Selector="^:tone-error /template/ Ellipse#PART_StatusDot">
+            <Setter Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+        </Style>
+
+        <!-- 禁用态：降低对比度且不参与指针反馈 -->
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.45" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryDisabledForegroundBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#PART_Hover">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#PART_Glow">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#PART_Indicator">
+            <Setter Property="Width" Value="0" />
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#PART_Selected">
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+    </Style>
+</Styles>

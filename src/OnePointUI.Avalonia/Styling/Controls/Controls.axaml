@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:OnePointUI.Avalonia.Classes">
     <Design.PreviewWith>
@@ -81,4 +81,8 @@
     <StyleInclude Source="OnePointControls/Items/SteamCard.axaml" />
     <StyleInclude Source="OnePointControls/Navigation/CornerSelectBar/CornerSelectBar.axaml" />
     <StyleInclude Source="OnePointControls/Navigation/CornerSelectBar/CornerSelectBarItem.axaml" />
+    <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRail.axaml" />
+    <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRailItem.axaml" />
+    <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRailGroup.axaml" />
+    <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRailSeparator.axaml" />
 </Styles>

@@ -102,6 +102,10 @@ public class ThemeManager
             darkTheme["ShadowBrush"] = new SolidColorBrush(Color.Parse("#80000000"));
             darkTheme["GlowBrush"] = new SolidColorBrush(Color.Parse("#40000000"));
 
+            // 竖直导航栏（激发象限）：容器层与边框层，保持与卡片层级一致的半透明层次
+            darkTheme["NavigationRailBackgroundBrush"] = new SolidColorBrush(Color.Parse("#D92A2A2A"));
+            darkTheme["NavigationRailBorderBrush"] = new SolidColorBrush(Color.Parse("#3F3F3F"));
+
             // ==== 浅色主题 ====
             var lightTheme = new ResourceDictionary();
 
@@ -134,6 +138,9 @@ public class ThemeManager
 
             lightTheme["ShadowBrush"] = new SolidColorBrush(Color.Parse("#33000000"));
             lightTheme["GlowBrush"] = new SolidColorBrush(Color.Parse("#22000000"));
+
+            lightTheme["NavigationRailBackgroundBrush"] = new SolidColorBrush(Color.Parse("#E8FFFFFF"));
+            lightTheme["NavigationRailBorderBrush"] = new SolidColorBrush(Color.Parse("#D4D4D4"));
 
             // 将主题资源添加到应用程序资源中
             _application.Resources["DarkTheme"] = darkTheme;
@@ -251,6 +258,53 @@ public class ThemeManager
             _application.Resources["AccentSubtleBrush"] = new SolidColorBrush(subtle);
             _application.Resources["AccentSubtleHoverBrush"] = new SolidColorBrush(subtleHover);
             _application.Resources["AccentSubtlePressedBrush"] = new SolidColorBrush(subtlePressed);
+
+            // ==== 竖直导航栏（激发象限）主题令牌 ====
+            // 选中底色：10%–14% 强调色；悬停略高；指示条为纵向渐变，两端收窄形成发光感。
+            var railSelectedAlpha = isDark ? 0.14 : 0.10;
+            var railSelectedHoverAlpha = isDark ? 0.20 : 0.16;
+            var indicatorTail = accent.WithAlpha(isDark ? 0.35 : 0.45);
+            _application.Resources["NavigationRailSelectedBrush"] =
+                new SolidColorBrush(accent.WithAlpha(railSelectedAlpha));
+            _application.Resources["NavigationRailSelectedHoverBrush"] =
+                new SolidColorBrush(accent.WithAlpha(railSelectedHoverAlpha));
+            // 指示条：从左向右渐变（实心收尾向右淡出），不再是两端收窄的中心式渐变。
+            _application.Resources["NavigationRailIndicatorBrush"] = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative),
+                GradientStops =
+                {
+                    new GradientStop(accent, 0),
+                    new GradientStop(indicatorTail, 1)
+                }
+            };
+            // 选中微光：同样从左向右扫过，替换原先的径向（中心亮）光晕。
+            _application.Resources["NavigationRailGlowBrush"] = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative),
+                GradientStops =
+                {
+                    new GradientStop(accent.WithAlpha(isDark ? 0.30 : 0.20), 0),
+                    new GradientStop(accent.WithAlpha(isDark ? 0.12 : 0.08), 0.55),
+                    new GradientStop(accent.WithAlpha(0), 1)
+                }
+            };
+            // 导航栏背景顶部的环境光：自上而下渐变，与按钮的横向渐变互不影响。
+            _application.Resources["NavigationRailAmbientBrush"] = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+                GradientStops =
+                {
+                    new GradientStop(accent.WithAlpha(isDark ? 0.34 : 0.22), 0),
+                    new GradientStop(accent.WithAlpha(isDark ? 0.16 : 0.10), 0.4),
+                    new GradientStop(accent.WithAlpha(isDark ? 0.05 : 0.03), 0.75),
+                    new GradientStop(accent.WithAlpha(0), 1)
+                }
+            };
+            _application.Resources["NavigationRailStatusDotBrush"] = new SolidColorBrush(accent);
 
             // 向后兼容：保留旧名称，等价映射到新画笔
             _application.Resources["AccentBackgroundOverBrush"] = new SolidColorBrush(pressed);

@@ -1,0 +1,218 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:onePointControls="clr-namespace:OnePointUI.Avalonia.Styling.Controls.OnePointControls"
+        xmlns:rail="using:OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation.NavigationRail">
+    <Design.PreviewWith>
+        <Border Padding="20" Background="{DynamicResource BackgroundBrush}">
+            <rail:OnePointNavigationRail SelectedKey="Home" Height="420">
+                <rail:OnePointNavigationRail.BrandIcon>
+                    <onePointControls:FontIcon Glyph="&#xE80F;" FontSize="18" />
+                </rail:OnePointNavigationRail.BrandIcon>
+                <rail:OnePointNavigationRailGroup Header="资源象限">
+                    <rail:OnePointNavigationRailItem Glyph="&#xE80F;"
+                                                     ItemText="主页"
+                                                     NavigationKey="Home"
+                                                     BadgeText="2" />
+                    <rail:OnePointNavigationRailItem Glyph="&#xE74C;"
+                                                     ItemText="扩展"
+                                                     NavigationKey="Extensions" />
+                </rail:OnePointNavigationRailGroup>
+                <rail:OnePointNavigationRailSeparator />
+                <rail:OnePointNavigationRailGroup Header="系统象限">
+                    <rail:OnePointNavigationRailItem Glyph="&#xE713;"
+                                                     ItemText="设置"
+                                                     NavigationKey="Settings" />
+                </rail:OnePointNavigationRailGroup>
+                <rail:OnePointNavigationRail.Footer>
+                    <StackPanel Margin="10,8" Spacing="2">
+                        <TextBlock Text="已连接" FontSize="11" />
+                    </StackPanel>
+                </rail:OnePointNavigationRail.Footer>
+            </rail:OnePointNavigationRail>
+        </Border>
+    </Design.PreviewWith>
+
+    <!--
+        激发象限导航栏外壳：
+        · 顶部品牌区（Logo / 产品名 / 折叠按钮）
+        · 中部弹性滚动区（象限分组，内容溢出时内部滚动）
+        · 底部状态区（账号、设置、帮助、通知）
+        宽度过渡 220ms，只改变面板自身宽度，不触发整树重绘。
+    -->
+    <Style Selector="rail|OnePointNavigationRail">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Vertical" Spacing="4" Margin="6,2" />
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="PART_Root"
+                        Width="{TemplateBinding CurrentWidth}"
+                        HorizontalAlignment="Left"
+                        CornerRadius="12"
+                        Background="{DynamicResource NavigationRailBackgroundBrush}"
+                        BorderBrush="{DynamicResource NavigationRailBorderBrush}"
+                        BorderThickness="1"
+                        ClipToBounds="True">
+                    <Border.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Width"
+                                              Duration="0:0:0.22"
+                                              Easing="ExponentialEaseOut" />
+                        </Transitions>
+                    </Border.Transitions>
+
+                    <Grid RowDefinitions="Auto,*,Auto,Auto">
+                        <!-- 象限微光：强调色径向光晕，为主题切换与自定义强调色自动跟随 -->
+                        <!-- 顶部环境光：横向拉满导航栏宽度（展开/折叠自适应），纵向自上而下淡出 -->
+                        <Border Grid.Row="0"
+                                Grid.RowSpan="3"
+                                Name="PART_AmbientGlow"
+                                Height="220"
+                                Margin="0,-96,0,0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Top"
+                                Background="{DynamicResource NavigationRailAmbientBrush}"
+                                Opacity="0.5"
+                                IsHitTestVisible="False" />
+
+                        <!-- 品牌区 -->
+                        <Border Grid.Row="0" Padding="6,8,6,4">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                <ContentControl Name="PART_BrandIcon"
+                                                Grid.Column="0"
+                                                Width="34"
+                                                Height="34"
+                                                VerticalAlignment="Center"
+                                                HorizontalContentAlignment="Center"
+                                                VerticalContentAlignment="Center"
+                                                Content="{TemplateBinding BrandIcon}"
+                                                IsVisible="{TemplateBinding IsExpanded}" />
+
+                                <StackPanel Name="PART_BrandText"
+                                            Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Spacing="1"
+                                            IsVisible="{TemplateBinding IsExpanded}">
+                                    <TextBlock Text="{TemplateBinding BrandTitle}"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{TemplateBinding BrandDescription}"
+                                               FontSize="10"
+                                               Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}"
+                                               TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+
+                                <Button Name="PART_CollapseToggle"
+                                        Grid.Column="2"
+                                        Classes="NoBorder"
+                                        Width="30"
+                                        Height="30"
+                                        CornerRadius="8"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Right"
+                                        AutomationProperties.Name="{TemplateBinding CurrentCollapseHint}">
+                                    <onePointControls:FontIcon Glyph="{TemplateBinding CurrentCollapseGlyph}"
+                                                               FontSize="10"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center" />
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <!-- 主导航区：象限分组 + 弹性滚动 -->
+                        <ScrollViewer Grid.Row="1"
+                                      Margin="0,4,0,0"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto"
+                                      Background="Transparent">
+                            <ItemsPresenter Name="PART_ItemsPresenter"
+                                            ItemsPanel="{TemplateBinding ItemsPanel}" />
+                        </ScrollViewer>
+
+                        <!-- 弹性留白：中部可放搜索、快捷入口、最近使用；无内容时保持呼吸感 -->
+                        <Panel Grid.Row="2"
+                               Name="PART_Spacer"
+                               MinHeight="4" />
+
+                        <!-- 底部状态区 -->
+                        <Border Grid.Row="3"
+                                Name="PART_FooterDivider"
+                                Padding="0,4"
+                                BorderBrush="{DynamicResource PrimaryBorderBrush}"
+                                BorderThickness="0,1,0,0"
+                                IsVisible="{TemplateBinding HasFooter}">
+                            <ContentControl Name="PART_FooterHost"
+                                            Content="{TemplateBinding Footer}"
+                                            HorizontalContentAlignment="Stretch" />
+                        </Border>
+
+                        <!-- 宽度手柄：展开态可拖动改变导航栏宽度（折叠态不参与命中测试） -->
+                        <Panel Name="PART_ResizeGrip"
+                               Grid.Row="0"
+                               Grid.RowSpan="4"
+                               Width="6"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Stretch"
+                               Background="Transparent"
+                               Cursor="SizeWestEast"
+                               IsVisible="{TemplateBinding IsResizable}"
+                               AutomationProperties.Name="调整导航栏宽度">
+                            <Border Name="PART_ResizeGripVisual"
+                                    Width="2"
+                                    Margin="0,12"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Stretch"
+                                    CornerRadius="1"
+                                    Background="{DynamicResource AccentBackgroundBrush}"
+                                    Opacity="0" />
+                        </Panel>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- 折叠态：折叠按钮接管品牌位并居中，避免出现两个图标的拥挤布局 -->
+        <Style Selector="^:collapsed /template/ Button#PART_CollapseToggle">
+            <Setter Property="Grid.Column" Value="0" />
+            <Setter Property="Grid.ColumnSpan" Value="3" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="^:collapsed /template/ Border#PART_Root">
+            <Setter Property="CornerRadius" Value="12" />
+        </Style>
+
+        <!-- 折叠态宽度固定，手柄不参与命中测试 -->
+        <Style Selector="^:collapsed /template/ Panel#PART_ResizeGrip">
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+
+        <Style Selector="^:collapsed /template/ Border#PART_ResizeGripVisual">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <!-- 悬停/拖动时显示手柄提示条 -->
+        <Style Selector="^ /template/ Panel#PART_ResizeGrip:pointerover Border#PART_ResizeGripVisual">
+            <Setter Property="Opacity" Value="0.75" />
+        </Style>
+
+        <Style Selector="^:resizing /template/ Border#PART_ResizeGripVisual">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <!-- 拖动期间关闭宽度过渡，保证手柄与指针 1:1 跟手 -->
+        <Style Selector="^:resizing /template/ Border#PART_Root">
+            <Setter Property="Transitions">
+                <Transitions />
+            </Setter>
+        </Style>
+    </Style>
+</Styles>

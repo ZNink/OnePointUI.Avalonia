@@ -1,0 +1,116 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:onePointControls="clr-namespace:OnePointUI.Avalonia.Styling.Controls.OnePointControls"
+        xmlns:rail="using:OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation.NavigationRail">
+    <Design.PreviewWith>
+        <Border Padding="20" Width="260">
+            <StackPanel>
+                <rail:OnePointNavigationRailGroup Header="资源象限">
+                    <rail:OnePointNavigationRailItem Glyph="&#xE80F;" ItemText="主页" NavigationKey="Home" IsSelected="True" />
+                    <rail:OnePointNavigationRailItem Glyph="&#xE74C;" ItemText="扩展" NavigationKey="Extensions" />
+                </rail:OnePointNavigationRailGroup>
+                <rail:OnePointNavigationRailGroup Header="系统象限" IsExpanded="False">
+                    <rail:OnePointNavigationRailItem Glyph="&#xE713;" ItemText="设置" NavigationKey="Settings" />
+                </rail:OnePointNavigationRailGroup>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!--
+        象限分组：小号大写小标题 + 可折叠子项。
+        折叠动画只改分组自身内容的高度与透明度（200ms），不波及整棵树。
+        导航栏折叠时隐藏标题（:compact），只保留子项图标。
+    -->
+    <Style Selector="rail|OnePointNavigationRailGroup">
+        <!-- 与导航栏 6px 项间距叠加后形成 12px 的象限间隔 -->
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Vertical" Spacing="4" />
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="Auto,Auto">
+                    <Button Name="PART_Header"
+                            Grid.Row="0"
+                            Classes="NoBorder"
+                            Height="28"
+                            CornerRadius="8"
+                            Padding="10,0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            IsVisible="{TemplateBinding IsHeaderVisible}"
+                            ToolTip.Tip="{TemplateBinding Header}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <ContentPresenter Grid.Column="0"
+                                              Content="{TemplateBinding Header}"
+                                              VerticalAlignment="Center"
+                                              HorizontalContentAlignment="Left">
+                                <ContentPresenter.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="FontSize" Value="11" />
+                                        <Setter Property="Opacity" Value="0.72" />
+                                        <Setter Property="Foreground"
+                                                Value="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                    </Style>
+                                </ContentPresenter.Styles>
+                            </ContentPresenter>
+
+                            <onePointControls:FontIcon Name="PART_HeaderChevron"
+                                                       Grid.Column="1"
+                                                       Glyph="&#xE70D;"
+                                                       FontSize="9"
+                                                       Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}"
+                                                       Opacity="0.6"
+                                                       VerticalAlignment="Center"
+                                                       IsVisible="{TemplateBinding IsCollapsible}" />
+                        </Grid>
+                    </Button>
+
+                    <Border Name="PART_ItemsHost"
+                            Grid.Row="1"
+                            Height="0"
+                            Opacity="0"
+                            IsVisible="False"
+                            ClipToBounds="True">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Height"
+                                                  Duration="0:0:0.2"
+                                                  Easing="QuarticEaseOut" />
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.18"
+                                                  Easing="ExponentialEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^ /template/ Button#PART_Header">
+            <Setter Property="Opacity" Value="0.9" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Button#PART_Header">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:collapsed /template/ onePointControls|FontIcon#PART_HeaderChevron">
+            <Setter Property="Glyph" Value="&#xE76C;" />
+        </Style>
+
+        <Style Selector="^:compact /template/ Button#PART_Header">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </Style>
+</Styles>
