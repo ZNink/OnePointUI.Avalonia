@@ -31,11 +31,11 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundSecondaryBrush}" />
-        <Setter Property="Transitions">
-            <Transitions>
-                <BrushTransition Property="Foreground" Duration="0:0:0.1" />
-            </Transitions>
-        </Setter>
+        <!--
+            不要给 Foreground 加 BrushTransition：它是继承属性，过渡期间每一帧都会重新下发到
+            子元素并触发一次整窗布局。侧边栏展开时页面较重（卡片列表、市场页），逐帧布局会直接
+            掉帧；底栏只动 Opacity，所以没这个问题。颜色切换改为直接生效（仍有 0.1s 背景悬停过渡）。
+        -->
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel Name="PART_Root"
@@ -85,22 +85,30 @@
                         </Border.Transitions>
                     </Border>
 
-                    <!-- 象限焦点：3px 渐变指示条，选中时从 0 宽滑入 -->
+                    <!--
+                        象限焦点：3px 渐变指示条，选中时从左缘滑出。
+                        滑出的位移与拉伸只用 RenderTransform 表达：动画 Margin/Width 会逐帧让
+                        整棵可视树重新布局，页面较重时（卡片列表、市场页）直接掉帧，而底栏只
+                        动 Opacity 所以不卡。
+                    -->
                     <Border Name="PART_Indicator"
-                            Width="0"
-                            Margin="0,10"
+                            Width="3"
+                            Margin="4,8"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Stretch"
                             CornerRadius="2"
                             Background="{DynamicResource NavigationRailIndicatorBrush}"
                             IsVisible="{TemplateBinding ShowIndicator}"
                             Opacity="0"
+                            RenderTransform="translate(-4px,2px) scale(0,1)"
+                            RenderTransformOrigin="0,0.5"
                             IsHitTestVisible="False">
                         <Border.Transitions>
                             <Transitions>
-                                <DoubleTransition Property="Width" Duration="0:0:0.18" Easing="QuarticEaseOut" />
+                                <TransformOperationsTransition Property="RenderTransform"
+                                                               Duration="0:0:0.18"
+                                                               Easing="QuarticEaseOut" />
                                 <DoubleTransition Property="Opacity" Duration="0:0:0.16" Easing="ExponentialEaseOut" />
-                                <ThicknessTransition Property="Margin" Duration="0:0:0.18" Easing="QuarticEaseOut" />
                             </Transitions>
                         </Border.Transitions>
                     </Border>
@@ -128,7 +136,16 @@
                                Width="20"
                                Height="20"
                                HorizontalAlignment="Left"
-                               VerticalAlignment="Center">
+                               VerticalAlignment="Center"
+                               RenderTransformOrigin="0.5,0.5">
+                            <Panel.Transitions>
+                                <Transitions>
+                                    <!-- 悬停位移走变换，避免逐帧触发布局 -->
+                                    <TransformOperationsTransition Property="RenderTransform"
+                                                                   Duration="0:0:0.1"
+                                                                   Easing="QuinticEaseOut" />
+                                </Transitions>
+                            </Panel.Transitions>
                             <onePointControls:FontIcon Name="PART_Icon"
                                                        Glyph="{TemplateBinding Glyph}"
                                                        Foreground="{TemplateBinding Foreground}"
@@ -215,7 +232,7 @@
         </Style>
 
         <Style Selector="^:pointerover /template/ Panel#PART_IconHost">
-            <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="RenderTransform" Value="translate(2px,0)" />
         </Style>
 
         <Style Selector="^:pressed /template/ Panel#PART_Root">
@@ -243,8 +260,7 @@
         </Style>
 
         <Style Selector="^:selected /template/ Border#PART_Indicator">
-            <Setter Property="Width" Value="3" />
-            <Setter Property="Margin" Value="4,8" />
+            <Setter Property="RenderTransform" Value="translate(0,0) scale(1,1)" />
             <Setter Property="Opacity" Value="1" />
         </Style>
 
@@ -276,7 +292,7 @@
         </Style>
 
         <Style Selector="^:compact:pointerover /template/ Panel#PART_IconHost">
-            <Setter Property="Margin" Value="0" />
+            <Setter Property="RenderTransform" Value="translate(0,0)" />
         </Style>
 
         <!-- 状态点：语义色调全部走平台状态令牌 -->
@@ -311,7 +327,7 @@
         </Style>
 
         <Style Selector="^:disabled /template/ Border#PART_Indicator">
-            <Setter Property="Width" Value="0" />
+            <Setter Property="RenderTransform" Value="translate(-4px,2px) scale(0,1)" />
             <Setter Property="Opacity" Value="0" />
         </Style>
 
