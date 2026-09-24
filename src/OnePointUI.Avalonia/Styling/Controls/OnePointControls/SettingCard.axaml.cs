@@ -31,9 +31,9 @@ public class SettingCard : ContentControl
     public static readonly StyledProperty<bool> IsNotFontIconProperty =
         AvaloniaProperty.Register<SettingCard, bool>(nameof(IsNotFontIcon));
 
-    public static readonly StyledProperty<IImage> ImageIconProperty =
-        AvaloniaProperty.Register<SettingCard, IImage>(nameof(ImageIcon));
-    public event EventHandler<RoutedEventArgs> Click;
+    public static readonly StyledProperty<IImage?> ImageIconProperty =
+        AvaloniaProperty.Register<SettingCard, IImage?>(nameof(ImageIcon));
+    public event EventHandler<RoutedEventArgs>? Click;
 
     public string Glyph
     {
@@ -87,18 +87,16 @@ public class SettingCard : ContentControl
         set => SetValue(ImageIconProperty, value);
     }
 
-    private Border _rootBorder;
-
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
 
-        _rootBorder = e.NameScope.Find<Border>("PART_Root");
-        if (_rootBorder != null)
+        var rootBorder = e.NameScope.Find<Border>("PART_Root");
+        if (rootBorder != null)
         {
-            _rootBorder.PointerPressed += RootBorder_PointerPressed;
-            _rootBorder.PointerReleased += RootBorder_PointerReleased;
-            _rootBorder.PointerCaptureLost += RootBorder_PointerCaptureLost;
+            rootBorder.PointerPressed += RootBorder_PointerPressed;
+            rootBorder.PointerReleased += RootBorder_PointerReleased;
+            rootBorder.PointerCaptureLost += RootBorder_PointerCaptureLost;
         }
 
         var contentPresenter = e.NameScope.Find<ContentControl>("ActionContentControl");
@@ -118,7 +116,7 @@ public class SettingCard : ContentControl
         if (change.Property == IsFontIconProperty) SetValue(IsNotFontIconProperty, !(bool)change.NewValue!);
     }
     
-    private void RootBorder_PointerPressed(object sender, PointerPressedEventArgs e)
+    private void RootBorder_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         // 触发 Click 事件，这样外部就可以像订阅 Button.Click 一样订阅 SettingCard.Click
         Click?.Invoke(this, new RoutedEventArgs());

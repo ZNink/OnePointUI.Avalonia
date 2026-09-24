@@ -9,7 +9,7 @@ public class SettingExpander : Expander
     public static readonly StyledProperty<string> GlyphProperty =
         AvaloniaProperty.Register<SettingExpander, string>(nameof(Glyph), "");
 
-    public static readonly StyledProperty<object> HeaderProperty =
+    public static readonly new StyledProperty<object> HeaderProperty =
         AvaloniaProperty.Register<SettingExpander, object>(nameof(Header));
 
     public static readonly StyledProperty<object> DescriptionProperty =
@@ -39,7 +39,7 @@ public class SettingExpander : Expander
         set => SetValue(GlyphProperty, value);
     }
 
-    public object Header
+    public new object Header
     {
         get => GetValue(HeaderProperty);
         set => SetValue(HeaderProperty, value);

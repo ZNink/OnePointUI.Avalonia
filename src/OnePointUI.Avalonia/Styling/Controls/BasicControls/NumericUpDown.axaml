@@ -38,7 +38,7 @@
                                  BorderThickness="0"
                                  Padding="{TemplateBinding Padding}"
                                  Foreground="{TemplateBinding Foreground}"
-                                 Watermark="{TemplateBinding Watermark}"
+                                 PlaceholderText="{TemplateBinding Watermark}"
                                  Text="{TemplateBinding Text, Mode=TwoWay}"
                                  MinHeight="0"
                                  VerticalContentAlignment="Center" />

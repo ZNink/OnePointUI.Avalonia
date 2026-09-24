@@ -16,7 +16,7 @@ public partial class BreadcrumbBar : UserControl
         InitializeComponent();
     }
 
-    public Action RootItemClick { get; set; }
+    public Action? RootItemClick { get; set; }
 
     public string RootItem
     {
@@ -35,20 +35,6 @@ public partial class BreadcrumbBar : UserControl
 
     public void SetItems(List<BreadcrumbItemInfo> items)
     {
-        IBrush GetFontColorResourceFromApp()
-        {
-            // Application.Current 是一个全局的入口点
-            var app = Application.Current;
-
-            if (app != null)
-                // 从应用程序的资源中查找 :cite[1]
-                // 注意：这里查找的是 Application.Resources 里定义的资源
-                if (app.TryFindResource("PrimaryForegroundBrush", out var resourceValue))
-                    return resourceValue as IBrush;
-
-            return new SolidColorBrush(global::Avalonia.Media.Colors.Gray);
-        }
-
         ItemsBar.Children.Clear();
 
         foreach (var item in items)
@@ -72,8 +58,7 @@ public partial class BreadcrumbBar : UserControl
 
             newTtem.Click += (_, __) =>
             {
-                if (item.ItemClickAction != null)
-                    item.ItemClickAction.Invoke(item);
+                item.ItemClickAction?.Invoke(item);
             };
 
             ItemsBar.Children.Add(newItemIcon);
@@ -83,7 +68,7 @@ public partial class BreadcrumbBar : UserControl
 
     private void RootItemBox_OnClick(object? sender, RoutedEventArgs e)
     {
-        RootItemClick.Invoke();
+        RootItemClick?.Invoke();
         ItemsBar.Children.Clear();
     }
 }

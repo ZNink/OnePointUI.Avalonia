@@ -10,6 +10,10 @@ namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls.Notice.Info;
 
 public partial class NoticeBox : UserControl
 {
+    public NoticeBox() : this(new NoticeInfo())
+    {
+    }
+
     public NoticeBox(NoticeInfo noticeInfo)
     {
         InitializeComponent();
@@ -28,7 +32,7 @@ public partial class NoticeBox : UserControl
         closeTimer.Start();
     }
 
-    public Action<NoticeBox> OnClose { get; set; } = null!;
+    public Action<NoticeBox>? OnClose { get; set; }
 
     public async void CloseThis()
     {
@@ -58,7 +62,7 @@ public partial class NoticeBox : UserControl
             }
         };
 
-        animation.RunAsync(PATH_Border);
+        _ = animation.RunAsync(PATH_Border);
         await Task.Delay(600);
 
         OnClose?.Invoke(this);

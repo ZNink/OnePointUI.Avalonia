@@ -46,15 +46,32 @@ public partial class DialogHost : UserControl
 
     public static async Task Close()
     {
-        global::Avalonia.Threading.Dispatcher.UIThread.Invoke(async () =>
+        var hasHost = await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            if (_host == null) return;
+            if (_host == null)
+            {
+                return false;
+            }
 
             // 淡出动画
             _host.DialogBox.Content = null;
             _host.BackgroundGrid.Opacity = 0;
+            return true;
+        });
 
-            await Task.Delay(400); // 等待淡出动画完成
+        if (!hasHost)
+        {
+            return;
+        }
+
+        await Task.Delay(400); // 等待淡出动画完成
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (_host == null)
+            {
+                return;
+            }
 
             _host.IsVisible = false;
             _isShowingDialog = false;

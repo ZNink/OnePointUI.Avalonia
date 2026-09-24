@@ -7,8 +7,8 @@ namespace OnePointUI.Avalonia.Styling.Effect;
 
 public sealed class SkiaShaderRenderer : Control
 {
-    private CompositionCustomVisual _customVisual;
-    private SkiaEffect _sukiEffect;
+    private CompositionCustomVisual? _customVisual;
+    private SkiaEffect? _sukiEffect;
     private bool _isRunning;
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

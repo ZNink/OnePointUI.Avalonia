@@ -9,6 +9,10 @@ public partial class DialogContent : UserControl
 {
     private readonly DialogInfo _info;
 
+    public DialogContent() : this(new DialogInfo())
+    {
+    }
+
     public DialogContent(DialogInfo info)
     {
         _info = info;
@@ -58,7 +62,7 @@ public partial class DialogContent : UserControl
     {
         if (_info.CloseOnAction)
         {
-            DialogHost.Close();
+            _ = DialogHost.Close();
         }
         _info.CloseAction?.Invoke();
     }
@@ -67,7 +71,7 @@ public partial class DialogContent : UserControl
     {
         if (_info.CloseOnAction)
         {
-            DialogHost.Close();
+            _ = DialogHost.Close();
         }
         _info.PrimaryAction?.Invoke();
     }
@@ -76,7 +80,7 @@ public partial class DialogContent : UserControl
     {
         if (_info.CloseOnAction)
         {
-            DialogHost.Close();
+            _ = DialogHost.Close();
         }
         _info.SecondaryAction?.Invoke();
     }

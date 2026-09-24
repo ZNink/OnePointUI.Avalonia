@@ -81,7 +81,8 @@ public class InfoBar : TemplatedControl
             InfoBarType.Error => Brush.Parse("#FF99A4"),
             InfoBarType.Warning => Brush.Parse("#FCE100"),
             InfoBarType.Info => Brush.Parse("#0F64A3"),
-            InfoBarType.Success => Brush.Parse("#6CCB5F")
+            InfoBarType.Success => Brush.Parse("#6CCB5F"),
+            _ => Brushes.Transparent
         };
     }
 
@@ -92,7 +93,8 @@ public class InfoBar : TemplatedControl
             InfoBarType.Error => Brushes.DarkRed,
             InfoBarType.Warning => Brushes.DarkGoldenrod,
             InfoBarType.Info => Brushes.Transparent,
-            InfoBarType.Success => Brushes.Green
+            InfoBarType.Success => Brushes.Green,
+            _ => Brushes.Transparent
         };
     }
 
@@ -103,7 +105,8 @@ public class InfoBar : TemplatedControl
             InfoBarType.Error => "\uEB90",
             InfoBarType.Warning => "\uE814",
             InfoBarType.Info => "\uF167",
-            InfoBarType.Success => "\uEC61"
+            InfoBarType.Success => "\uEC61",
+            _ => "\uF167"
         };
     }
 }

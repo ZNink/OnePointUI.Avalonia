@@ -37,7 +37,7 @@ public class SkiaEffect
 
     static SkiaEffect()
     {
-        if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlled)
+        if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlled)
             controlled.Exit += (_, _) => EnsureDisposed();
     }
 
@@ -112,7 +112,10 @@ public class SkiaEffect
             throw new FileNotFoundException(
                 $"Unable to find a file with the name \"{shaderName}\" anywhere in the assembly.");
 
-        using var tr = new StreamReader(assembly.GetManifestResourceStream(resName)!);
+        var resourceStream = assembly?.GetManifestResourceStream(resName)
+                             ?? throw new FileNotFoundException(
+                                 $"Unable to open the embedded resource \"{resName}\".");
+        using var tr = new StreamReader(resourceStream);
         return FromString(tr.ReadToEnd());
     }
 
@@ -151,7 +154,7 @@ public class SkiaEffect
         LoadedEffects.Clear();
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not SkiaEffect effect) return false;
         return effect._shaderString == _shaderString;
@@ -198,7 +201,7 @@ public class SkiaEffect
 
     public override int GetHashCode()
     {
-        return base.GetHashCode();
+        return StringComparer.Ordinal.GetHashCode(_shaderString);
     }
 
     private class ShaderCompilationException(string message) : Exception(message);

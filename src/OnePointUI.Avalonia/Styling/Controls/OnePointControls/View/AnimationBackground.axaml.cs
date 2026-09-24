@@ -6,7 +6,7 @@ namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls.View;
 
 public partial class AnimationBackground : UserControl
 {
-    private BackgroundType _backgroundType;
+    private BackgroundType _backgroundType = BackgroundType.Bubble;
 
     public AnimationBackground()
     {
@@ -27,7 +27,6 @@ public partial class AnimationBackground : UserControl
 
     public void Update()
     {
-        if (_backgroundType == null) _backgroundType = BackgroundType.Bubble;
         SkiaEffect.UpdateColor();
 
         SkiaShaderRenderer.Stop();

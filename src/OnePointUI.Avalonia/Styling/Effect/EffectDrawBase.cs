@@ -20,7 +20,7 @@ public abstract class EffectDrawBase : CompositionCustomVisualHandler
     private readonly Stopwatch _animationTick = new();
     private readonly bool _invalidateRect;
     private bool _animationEnabled;
-    private SkiaEffect _effect;
+    private SkiaEffect? _effect;
 
     protected EffectDrawBase(bool invalidateRect = true)
     {
@@ -33,7 +33,7 @@ public abstract class EffectDrawBase : CompositionCustomVisualHandler
         //ActiveTheme = sTheme.ActiveColorTheme!;
     }
 
-    public SkiaEffect Effect
+    public SkiaEffect? Effect
     {
         get => _effect;
         set
@@ -58,7 +58,7 @@ public abstract class EffectDrawBase : CompositionCustomVisualHandler
 
     public bool ForceSoftwareRendering { get; set; }
     protected float AnimationSpeedScale { get; set; } = 0.1f;
-    protected ThemeVariant ActiveVariant { get; private set; }
+    protected ThemeVariant ActiveVariant { get; private set; } = ThemeVariant.Light;
     protected float AnimationSeconds => (float)_animationTick.Elapsed.TotalSeconds;
 
     public override void OnRender(ImmediateDrawingContext context)
@@ -129,31 +129,31 @@ public abstract class EffectDrawBase : CompositionCustomVisualHandler
     /// </summary>
     protected abstract void RenderSoftware(SKCanvas canvas, SKRect rect);
 
-    protected SKShader EffectWithUniforms(float alpha = 1f)
+    protected SKShader? EffectWithUniforms(float alpha = 1f)
     {
         return EffectWithUniforms(Effect, alpha);
     }
 
-    protected SKShader EffectWithUniforms(SkiaEffect effect, float alpha = 1f)
+    protected SKShader? EffectWithUniforms(SkiaEffect? effect, float alpha = 1f)
     {
         return effect?.ToShaderWithUniforms(AnimationSeconds, ActiveVariant, GetRenderBounds(), AnimationSpeedScale,
             alpha);
     }
 
-    protected SKShader EffectWithCustomUniforms(Func<SKRuntimeEffect, SKRuntimeEffectUniforms> uniformFactory,
+    protected SKShader? EffectWithCustomUniforms(Func<SKRuntimeEffect, SKRuntimeEffectUniforms> uniformFactory,
         float alpha = 1f)
     {
         return EffectWithCustomUniforms(Effect, uniformFactory, alpha);
     }
 
-    protected SKShader EffectWithCustomUniforms(SkiaEffect effect,
+    protected SKShader? EffectWithCustomUniforms(SkiaEffect? effect,
         Func<SKRuntimeEffect, SKRuntimeEffectUniforms> uniformFactory, float alpha = 1f)
     {
         return effect?.ToShaderWithCustomUniforms(uniformFactory, AnimationSeconds, GetRenderBounds(),
             AnimationSpeedScale, alpha);
     }
 
-    protected virtual void EffectChanged(SkiaEffect oldValue, SkiaEffect newValue)
+    protected virtual void EffectChanged(SkiaEffect? oldValue, SkiaEffect? newValue)
     {
         // no-op
     }

@@ -8,14 +8,14 @@ namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation;
 public partial class NavigationFrame : UserControl
 {
     private readonly int ToPx = 50;
-    private ContentControl _currentFrame;
+    private ContentControl? _currentFrame;
 
     // 存储当前和上一页的引用，用于销毁
-    private object _currentPage;
+    private object? _currentPage;
 
-    private CancellationTokenSource _hideFrameCts;
-    private ContentControl _previousFrame;
-    private object _previousPage;
+    private CancellationTokenSource? _hideFrameCts;
+    private ContentControl? _previousFrame;
+    private object? _previousPage;
     private bool IsOneFrame;
 
     public NavigationFrame()
@@ -25,7 +25,7 @@ public partial class NavigationFrame : UserControl
 
     public NavigationFrameDirection NavigationFrameDirection { get; set; } = NavigationFrameDirection.Top;
 
-    public async void NavigateTo(object page)
+    public async void NavigateTo(object? page)
     {
         // 取消之前正在进行的任何隐藏操作
         _hideFrameCts?.Cancel();
@@ -209,7 +209,7 @@ public partial class NavigationFrame : UserControl
     /// <summary>
     ///     销毁指定页面
     /// </summary>
-    private void DestroyPage(object page, ContentControl frame)
+    private void DestroyPage(object? page, ContentControl? frame)
     {
         if (page == null) return;
 
@@ -230,7 +230,7 @@ public partial class NavigationFrame : UserControl
     /// <summary>
     ///     获取当前页面
     /// </summary>
-    public object GetCurrentPage()
+    public object? GetCurrentPage()
     {
         return _currentPage;
     }

@@ -5,6 +5,10 @@ namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls.Dialog;
 
 public partial class DialogBorder : UserControl
 {
+    public DialogBorder() : this(new DialogInfo())
+    {
+    }
+
     public DialogBorder(DialogInfo info)
     {
         InitializeComponent();

@@ -12,8 +12,8 @@ public partial class LotsPageFrame : UserControl
 
     public int TotalPage { get; set; }
     public int CurrentPage { get; set; }
-    public Action UpAction { get; set; }
-    public Action DownAction { get; set; }
+    public Action? UpAction { get; set; }
+    public Action? DownAction { get; set; }
 
     public void Update(object page, int max, int thisPage)
     {

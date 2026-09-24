@@ -204,9 +204,9 @@ public partial class OnePointWindow : Window
         if (IsMainWindow) Environment.Exit(0);
     }
 
-    public void CloseDraw()
+    public async void CloseDraw()
     {
-        SetBorderState(false);
+        await SetBorderState(false);
     }
 
     public async void OpenDraw(object? page, string title)
@@ -238,8 +238,8 @@ public partial class OnePointWindow : Window
         }
     }
 
-    private void CloseBorderBtn_OnClick(object? sender, RoutedEventArgs e)
+    private async void CloseBorderBtn_OnClick(object? sender, RoutedEventArgs e)
     {
-        SetBorderState(false);
+        await SetBorderState(false);
     }
 }
