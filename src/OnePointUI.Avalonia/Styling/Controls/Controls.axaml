@@ -85,4 +85,6 @@
     <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRailItem.axaml" />
     <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRailGroup.axaml" />
     <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRailSeparator.axaml" />
+    <StyleInclude Source="OnePointControls/Navigation/TabView/TabView.axaml" />
+    <StyleInclude Source="OnePointControls/Navigation/TabView/TabViewItem.axaml" />
 </Styles>

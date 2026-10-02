@@ -13,7 +13,7 @@
 
     <Style Selector="TextBox">
         <Setter Property="CornerRadius" Value="6" />
-        <Setter Property="Height" Value="32" />
+        <Setter Property="MinHeight" Value="32" />
         <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
         <Setter Property="CaretBrush" Value="{DynamicResource PrimaryForegroundBrush}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource AccentBackgroundBrush}" />
@@ -33,9 +33,8 @@
                             BorderThickness="1"
                             BorderBrush="{DynamicResource PrimaryBorderBrush}"
                             CornerRadius="{TemplateBinding CornerRadius}"
-                            Background="{DynamicResource PrimaryBackgroundBrush}"
-                            Width="{TemplateBinding Width}"
-                            Height="{TemplateBinding Height}">
+                            Background="{DynamicResource BackgroundBrushOpacity}"
+                            Width="{TemplateBinding Width}">
                         <Border Name="Path_Background"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
@@ -47,7 +46,7 @@
                     <TextBlock Name="PART_Watermark"
                                Text="{TemplateBinding Watermark}"
                                VerticalAlignment="Center"
-                               Foreground="Gray"
+                               Foreground="{DynamicResource PrimaryForegroundBrush}"
                                Opacity="0"
                                Margin="7"
                                TextTrimming="CharacterEllipsis"
