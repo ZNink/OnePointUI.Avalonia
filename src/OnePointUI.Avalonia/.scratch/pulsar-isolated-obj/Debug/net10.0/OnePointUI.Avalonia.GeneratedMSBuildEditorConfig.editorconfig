@@ -1,0 +1,269 @@
+is_global = true
+build_property.AvaloniaNameGeneratorIsEnabled = true
+build_property.AvaloniaNameGeneratorBehavior = InitializeComponent
+build_property.AvaloniaNameGeneratorDefaultFieldModifier = internal
+build_property.AvaloniaNameGeneratorFilterByPath = *
+build_property.AvaloniaNameGeneratorFilterByNamespace = *
+build_property.AvaloniaNameGeneratorViewFileNamingStrategy = NamespaceAndClassName
+build_property.AvaloniaNameGeneratorAttachDevTools = true
+build_property.AvaloniaUseCompiledBindingsByDefault = true
+build_property.AvaloniaMainPackageVersion = 12.1.3
+build_property.AvaloniaPreviewerNetCoreToolPath = C:\Users\ZNink\.nuget\packages\avalonia\12.1.3\buildTransitive\\..\tools\net8.0\designer\Avalonia.Designer.HostApp.dll
+build_property.AvaloniaResourcePaths = D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Assets\OnePointUI.Icon.png,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Colors\Colors.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Colors\ThemeColors.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\AutoCompleteBox.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\Button.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\Calendar.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\CalendarDatePicker.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\Carousel.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\CheckBox.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ComboBox.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ComboBoxItem.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ContextMenu.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\DatePicker.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\Expander.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\Flyout.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\GridSplitter.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\HyperLink.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ListBox.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\Menu.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\NumericUpDown.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\PathIcon.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\PopupRoot.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ProgressBar.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\RadioButton.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\RepeatButton.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ScrollBar.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ScrollViewer.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\Separator.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\Slider.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\SplitView.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\TabControl.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\TextBlock.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\TextBox.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\TimePicker.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ToggleButton.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ToggleSwitch.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\ToolTip.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\TreeView.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\TreeViewItem.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\BasicControls\Window.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\Controls.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Dialog\DialogBorder.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Dialog\DialogContent.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Dialog\DialogHost.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\FontIcon.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Items\BorderCard.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Items\CardCheckBox.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Items\SteamCard.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\LabelBox.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\LineTextBlock.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\Breadcrumb\BreadcrumbBar.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\CornerSelectBar\CornerSelectBar.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\CornerSelectBar\CornerSelectBarItem.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\LeftSelectBar\LeftSelectBar.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\LeftSelectBar\LeftSelectBarItem.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\LotsPageFrame.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\NavigationFrame.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\NavigationRail\OnePointNavigationRail.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\NavigationRail\OnePointNavigationRailGroup.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\NavigationRail\OnePointNavigationRailItem.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\NavigationRail\OnePointNavigationRailSeparator.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\SelectBar\SelectBar.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\SelectBar\SelectBarItem.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\TabView\TabView.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Navigation\TabView\TabViewItem.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Notice\IconNotice.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Notice\InfoBar.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Notice\InfoCard.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Notice\Info\NoticeBox.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Notice\Info\NoticePanel.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\Notice\LoadCard.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\PointHalo.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\ProgressRing.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\SegmentedButton.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\SettingCard.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\SettingExpander.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\View\AnimationBackground.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\View\ItemView.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\View\ItemViewItem.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Controls\OnePointControls\WindowFrame\OnePointWindow.axaml,D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\Styling\Core\OnePointTheme.axaml
+build_property.TargetFramework = net10.0
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EntryPointFilePath = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OnePointUI.Avalonia
+build_property.ProjectDir = D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Colors/Colors.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Colors/ThemeColors.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/AutoCompleteBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/Button.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/Calendar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/CalendarDatePicker.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/Carousel.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/CheckBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ComboBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ComboBoxItem.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ContextMenu.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/DatePicker.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/Expander.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/Flyout.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/GridSplitter.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/HyperLink.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ListBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/Menu.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/NumericUpDown.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/PathIcon.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/PopupRoot.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ProgressBar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/RadioButton.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/RepeatButton.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ScrollBar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ScrollViewer.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/Separator.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/Slider.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/SplitView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/TabControl.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/TextBlock.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/TextBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/TimePicker.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ToggleButton.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ToggleSwitch.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/ToolTip.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/TreeView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/TreeViewItem.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/BasicControls/Window.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/Controls.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Dialog/DialogBorder.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Dialog/DialogContent.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Dialog/DialogHost.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/FontIcon.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Items/BorderCard.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Items/CardCheckBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Items/SteamCard.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/LabelBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/LineTextBlock.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/Breadcrumb/BreadcrumbBar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/CornerSelectBar/CornerSelectBar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/CornerSelectBar/CornerSelectBarItem.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/LeftSelectBar/LeftSelectBar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/LeftSelectBar/LeftSelectBarItem.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/LotsPageFrame.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/NavigationFrame.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/NavigationRail/OnePointNavigationRail.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/NavigationRail/OnePointNavigationRailGroup.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/NavigationRail/OnePointNavigationRailItem.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/NavigationRail/OnePointNavigationRailSeparator.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/SelectBar/SelectBar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/SelectBar/SelectBarItem.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/TabView/TabView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Navigation/TabView/TabViewItem.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Notice/IconNotice.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Notice/InfoBar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Notice/InfoCard.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Notice/Info/NoticeBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Notice/Info/NoticePanel.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/Notice/LoadCard.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/PointHalo.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/ProgressRing.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/SegmentedButton.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/SettingCard.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/SettingExpander.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/View/AnimationBackground.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/View/ItemView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/View/ItemViewItem.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Controls/OnePointControls/WindowFrame/OnePointWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/workspace/pulsar/external/OnePointUI.Avalonia/src/OnePointUI.Avalonia/Styling/Core/OnePointTheme.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

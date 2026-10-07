@@ -1,0 +1,8 @@
+D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\.scratch\pulsar-isolated-obj\Debug\net10.0\OnePointUI.Avalonia.csproj.AssemblyReference.cache
+D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\.scratch\pulsar-isolated-obj\Debug\net10.0\Avalonia\Resources.Inputs.cache
+D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\.scratch\pulsar-isolated-obj\Debug\net10.0\Avalonia\resources
+D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\.scratch\pulsar-isolated-obj\Debug\net10.0\OnePointUI.Avalonia.GeneratedMSBuildEditorConfig.editorconfig
+D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\.scratch\pulsar-isolated-obj\Debug\net10.0\OnePointUI.Avalonia.AssemblyInfoInputs.cache
+D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\.scratch\pulsar-isolated-obj\Debug\net10.0\OnePointUI.Avalonia.AssemblyInfo.cs
+D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\.scratch\pulsar-isolated-obj\Debug\net10.0\OnePointUI.Avalonia.csproj.CoreCompileInputs.cache
+D:\workspace\pulsar\external\OnePointUI.Avalonia\src\OnePointUI.Avalonia\.scratch\pulsar-isolated-obj\Debug\net10.0\OnePointUI.Avalonia.sourcelink.json

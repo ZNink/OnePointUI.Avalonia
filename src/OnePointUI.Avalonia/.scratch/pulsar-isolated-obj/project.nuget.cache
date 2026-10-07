@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "dgSpecHash": "Yscr4m6sWmA=",
+  "success": true,
+  "projectFilePath": "D:\\workspace\\pulsar\\external\\OnePointUI.Avalonia\\src\\OnePointUI.Avalonia\\OnePointUI.Avalonia.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ZNink\\.nuget\\packages\\avalonia\\12.1.3\\avalonia.12.1.3.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\avalonia.buildservices\\11.3.2\\avalonia.buildservices.11.3.2.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\avalonia.remote.protocol\\12.1.3\\avalonia.remote.protocol.12.1.3.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\avalonia.skia\\12.1.3\\avalonia.skia.12.1.3.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\harfbuzzsharp\\8.3.1.3\\harfbuzzsharp.8.3.1.3.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\harfbuzzsharp.nativeassets.linux\\8.3.1.3\\harfbuzzsharp.nativeassets.linux.8.3.1.3.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\harfbuzzsharp.nativeassets.macos\\8.3.1.3\\harfbuzzsharp.nativeassets.macos.8.3.1.3.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\harfbuzzsharp.nativeassets.webassembly\\8.3.1.3\\harfbuzzsharp.nativeassets.webassembly.8.3.1.3.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\harfbuzzsharp.nativeassets.win32\\8.3.1.3\\harfbuzzsharp.nativeassets.win32.8.3.1.3.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\microcom.runtime\\0.11.6\\microcom.runtime.0.11.6.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\skiasharp\\3.119.4\\skiasharp.3.119.4.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\skiasharp.nativeassets.linux\\3.119.4\\skiasharp.nativeassets.linux.3.119.4.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\skiasharp.nativeassets.macos\\3.119.4\\skiasharp.nativeassets.macos.3.119.4.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\skiasharp.nativeassets.webassembly\\3.119.4\\skiasharp.nativeassets.webassembly.3.119.4.nupkg.sha512",
+    "C:\\Users\\ZNink\\.nuget\\packages\\skiasharp.nativeassets.win32\\3.119.4\\skiasharp.nativeassets.win32.3.119.4.nupkg.sha512"
+  ],
+  "logs": []
+}
