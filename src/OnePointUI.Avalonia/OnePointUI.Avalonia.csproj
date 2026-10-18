@@ -9,6 +9,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="Pulsar.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Avalonia" Version="12.1.3" />
         <PackageReference Include="Avalonia.Skia" Version="12.1.3" />
         <PackageReference Include="SkiaSharp" Version="3.119.4" />

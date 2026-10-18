@@ -141,6 +141,14 @@
                     </Button>
                 </StackPanel>
             </Grid>
+
+            <!-- 拖拽覆盖层：承载 OnePointUI 拖拽的拖影与占位符。
+                 这个模板是手写的 Border > Grid，没有默认 Window 模板里的
+                 VisualLayerManager，因此 OverlayLayer.GetOverlayLayer() 在这里
+                 找不到层；DragSession 按名字 PART_DragOverlay 优先取这一层。
+                 OverlayLayer 没有公开构造函数，这里用等价的 Canvas。 -->
+            <Canvas Name="PART_DragOverlay"
+                    IsHitTestVisible="False" />
         </Grid>
     </Border>
 </Window>
