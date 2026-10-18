@@ -65,6 +65,7 @@
     <StyleInclude Source="OnePointControls/SettingCard.axaml" />
     <StyleInclude Source="OnePointControls/SettingExpander.axaml" />
     <StyleInclude Source="OnePointControls/LabelBox.axaml" />
+    <StyleInclude Source="OnePointControls/SearchBox.axaml" />
     <StyleInclude Source="OnePointControls/ProgressRing.axaml" />
     <StyleInclude Source="OnePointControls/Notice/InfoBar.axaml" />
     <StyleInclude Source="OnePointControls/Notice/IconNotice.axaml" />

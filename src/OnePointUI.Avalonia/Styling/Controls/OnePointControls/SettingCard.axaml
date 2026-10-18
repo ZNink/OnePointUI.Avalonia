@@ -71,7 +71,7 @@
                                                     <Setter Property="FontSize"
                                                             Value="11" />
                                                     <Setter Property="Foreground"
-                                                            Value="Gray" />
+                                                            Value="{DynamicResource PrimaryForegroundSecondaryBrush}" />
                                                 </Style>
                                             </ContentPresenter.Styles>
                                         </ContentPresenter>
@@ -182,7 +182,7 @@
                                                 <Setter Property="FontSize"
                                                         Value="11" />
                                                 <Setter Property="Foreground"
-                                                        Value="Gray" />
+                                                        Value="{DynamicResource PrimaryForegroundSecondaryBrush}" />
                                             </Style>
                                         </ContentPresenter.Styles>
                                     </ContentPresenter>
@@ -291,7 +291,7 @@
                                                     <Setter Property="FontSize"
                                                             Value="12" />
                                                     <Setter Property="Foreground"
-                                                            Value="Gray" />
+                                                            Value="{DynamicResource PrimaryForegroundSecondaryBrush}" />
                                                 </Style>
                                             </ContentPresenter.Styles>
                                         </ContentPresenter>
@@ -345,6 +345,98 @@
                                     Padding="{TemplateBinding Padding}" />
                 </ControlTemplate>
             </Setter>
+        </Style>
+    </Style>
+
+    <!--
+      块状设置卡：Header/Description 组成标题行，Content 以全宽形式置于标题行下方。
+      默认模板把 Content 放到卡片右侧并垂直居中，富设置内容（下拉框 + 按钮组、
+      进度条、多行表单）会被挤压成狭窄的一列；Block 变体让内容独占整行，
+      适合设置页中承载复杂配置的分区卡片。仍保留 ActionContentControl 名称，
+      与 SettingCard.OnApplyTemplate 的指针处理兼容。
+    -->
+    <Style Selector="controls|SettingCard.Block">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="PART_Root">
+                    <items:BorderCard
+                        ClipToBounds="True"
+                        Padding="0"
+                        Name="PATH_Border">
+                        <Grid>
+                            <Border HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Name="PATH_Background"
+                                    IsVisible="{TemplateBinding IsClickable}"
+                                    CornerRadius="6"
+                                    ClipToBounds="True"
+                                    Background="{DynamicResource PrimaryForegroundBrush}"
+                                    Opacity="0" />
+
+                            <StackPanel>
+                                <Border Padding="16,12,16,0">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <controls:FontIcon Glyph="{TemplateBinding Glyph}"
+                                                           FontSize="20"
+                                                           Margin="0,0,8,0"
+                                                           VerticalAlignment="Center"
+                                                           IsVisible="{TemplateBinding IsFontIcon}"
+                                                           HorizontalAlignment="Left" />
+
+                                        <StackPanel Grid.Column="1"
+                                                    VerticalAlignment="Center">
+                                            <ContentPresenter Content="{TemplateBinding Header}">
+                                                <ContentPresenter.Styles>
+                                                    <Style Selector="TextBlock">
+                                                        <Setter Property="FontSize"
+                                                                Value="16" />
+                                                    </Style>
+                                                </ContentPresenter.Styles>
+                                            </ContentPresenter>
+
+                                            <ContentPresenter Content="{TemplateBinding Description}">
+                                                <ContentPresenter.Styles>
+                                                    <Style Selector="TextBlock">
+                                                        <Setter Property="FontSize"
+                                                                Value="11" />
+                                                        <Setter Property="Foreground"
+                                                                Value="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                                                        <Setter Property="TextWrapping"
+                                                                Value="Wrap" />
+                                                    </Style>
+                                                </ContentPresenter.Styles>
+                                            </ContentPresenter>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <ContentControl Name="ActionContentControl"
+                                                Content="{TemplateBinding Content}"
+                                                Margin="16,10,16,16"
+                                                HorizontalAlignment="Stretch" />
+                            </StackPanel>
+                        </Grid>
+                    </items:BorderCard>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Setter Property="MinHeight" Value="0" />
+
+        <Style Selector="^ /template/ Border#PATH_Background">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity"
+                                      Duration="0:0:0.09" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#PATH_Background">
+            <Setter Property="Opacity" Value="0.05" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#PATH_Background">
+            <Setter Property="Opacity" Value="0.2" />
         </Style>
     </Style>
 </Styles>

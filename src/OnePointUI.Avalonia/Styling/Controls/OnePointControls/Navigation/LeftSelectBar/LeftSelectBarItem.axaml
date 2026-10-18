@@ -90,13 +90,22 @@
             </ControlTemplate>
         </Setter>
 
-        <Style Selector="^:selected">
-            <Style Selector="^ /template/ Border#PART_AccentBackground">
-                <Setter Property="Width"
-                        Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
-                <Setter Property="Opacity" Value="1" />
-            </Style>
+    <Style Selector="^:selected">
+        <Style Selector="^ /template/ Border#PART_AccentBackground">
+            <Setter Property="Width"
+                    Value="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}" />
+            <Setter Property="Opacity" Value="1" />
         </Style>
+        <!-- 选中态底色为强调色，文字与图标切换到高对比前景，保证深浅色下的可读性。 -->
+        <Style Selector="^ /template/ TextBlock#PART_Text">
+            <Setter Property="Foreground"
+                    Value="{DynamicResource AccentForegroundBrush}" />
+        </Style>
+        <Style Selector="^ /template/ onePointControls|FontIcon#PART_Icon">
+            <Setter Property="Foreground"
+                    Value="{DynamicResource AccentForegroundBrush}" />
+        </Style>
+    </Style>
 
         <Style Selector="^:pointerover /template/ Border#PART_Background">
             <Setter Property="Opacity" Value="0.8" />

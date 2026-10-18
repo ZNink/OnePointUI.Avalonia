@@ -1,146 +1,40 @@
-using System;
 using Avalonia;
-using Avalonia.Animation.Easings;
 using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Threading;
 
 namespace OnePointUI.Avalonia.Behaviors
 {
+    /// <summary>
+    /// 平滑滚动的总开关。
+    /// </summary>
+    /// <remarks>
+    /// <para>真正的滚动逻辑在 <see cref="OnePointUI.Avalonia.Controls.SmoothScrollContentPresenter"/>
+    /// 里（模板内的内容呈现器），这个附加属性只负责把开关值传给呈现器。默认开启，
+    /// 全局生效；需要某个容器瞬间滚动时单独关闭即可：</para>
+    /// <code>
+    /// &lt;ScrollViewer behaviors:ScrollViewerSmoothScroll.EnableSmoothScroll="False"&gt;
+    /// </code>
+    ///
+    /// <para><b>历史注意。</b>早期版本在这里直接监听 <c>PointerWheelChanged</c> 并自己
+    /// 驱动一个定时器。但滚轮事件在冒泡到 <see cref="ScrollViewer"/> 之前就已经被模板内的
+    /// <see cref="Avalonia.Controls.Presenters.ScrollContentPresenter"/> 处理并置
+    /// <c>Handled</c>，所以那段代码实际上一帧都没有执行过；更糟的是它在边界处会把
+    /// 本应传给外层的滚轮事件吞掉，破坏嵌套滚动。改造后这里不再注册任何事件处理器。</para>
+    /// </remarks>
     public static class ScrollViewerSmoothScroll
     {
+        /// <summary>
+        /// 是否对该 <see cref="ScrollViewer"/> 启用平滑滚动。默认 <c>true</c>。
+        /// </summary>
         public static readonly AttachedProperty<bool> EnableSmoothScrollProperty =
             AvaloniaProperty.RegisterAttached<StyledElement, bool>(
                 "EnableSmoothScroll",
-                typeof(ScrollViewerSmoothScroll));
-
-        private static readonly AttachedProperty<ScrollAnimationState?> AnimationStateProperty =
-            AvaloniaProperty.RegisterAttached<StyledElement, ScrollAnimationState?>(
-                "AnimationState",
-                typeof(ScrollViewerSmoothScroll));
-
-        static ScrollViewerSmoothScroll()
-        {
-            EnableSmoothScrollProperty.Changed.AddClassHandler<ScrollViewer>(OnEnableSmoothScrollChanged);
-        }
+                typeof(ScrollViewerSmoothScroll),
+                defaultValue: true);
 
         public static void SetEnableSmoothScroll(StyledElement element, bool value)
             => element.SetValue(EnableSmoothScrollProperty, value);
 
         public static bool GetEnableSmoothScroll(StyledElement element)
             => element.GetValue(EnableSmoothScrollProperty);
-
-        private static void OnEnableSmoothScrollChanged(ScrollViewer sv, AvaloniaPropertyChangedEventArgs e)
-        {
-            if ((bool)e.NewValue!)
-            {
-                // Bubble lets the innermost ScrollViewer consume the wheel event first.
-                // Tunnel routing caused an outer page ScrollViewer to scroll before
-                // ComboBox popup lists and other nested scrollers saw the event.
-                sv.AddHandler(InputElement.PointerWheelChangedEvent, OnPointerWheelChanged, RoutingStrategies.Bubble);
-                sv.DetachedFromVisualTree += OnDetachedFromVisualTree;
-            }
-            else
-            {
-                sv.RemoveHandler(InputElement.PointerWheelChangedEvent, OnPointerWheelChanged);
-                sv.DetachedFromVisualTree -= OnDetachedFromVisualTree;
-                var state = sv.GetValue(AnimationStateProperty);
-                state?.Stop();
-                sv.SetValue(AnimationStateProperty, null);
-            }
-        }
-
-        private static void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
-        {
-            if (sender is ScrollViewer sv)
-            {
-                sv.RemoveHandler(InputElement.PointerWheelChangedEvent, OnPointerWheelChanged);
-                sv.DetachedFromVisualTree -= OnDetachedFromVisualTree;
-                var state = sv.GetValue(AnimationStateProperty);
-                state?.Stop();
-                sv.SetValue(AnimationStateProperty, null);
-            }
-        }
-
-        private static void OnPointerWheelChanged(object? sender, RoutedEventArgs e)
-        {
-            var args = (PointerWheelEventArgs)e;
-            if (args.Handled) return;
-            var sv = (ScrollViewer)sender!;
-
-            args.Handled = true;
-
-            var delta = args.Delta;
-            const double scrollAmount = 100;
-
-            var offset = sv.Offset;
-            var extent = sv.Extent;
-            var viewport = sv.Viewport;
-            var maxX = Math.Max(0, extent.Width - viewport.Width);
-            var maxY = Math.Max(0, extent.Height - viewport.Height);
-            var targetX = Math.Clamp(offset.X - delta.X * scrollAmount, 0, maxX);
-            var targetY = Math.Clamp(offset.Y - delta.Y * scrollAmount, 0, maxY);
-            var target = new Vector(targetX, targetY);
-
-            var state = sv.GetValue(AnimationStateProperty);
-            if (state == null)
-            {
-                state = new ScrollAnimationState(sv);
-                sv.SetValue(AnimationStateProperty, state);
-            }
-            state.StartAnimation(target);
-        }
-
-        private class ScrollAnimationState
-        {
-            private readonly ScrollViewer _sv;
-            private DispatcherTimer? _timer;
-            private Vector _from;
-            private Vector _to;
-            private long _startTicks;
-            private readonly long _durationTicks = TimeSpan.FromMilliseconds(300).Ticks;
-            private readonly Easing _easing = new ExponentialEaseOut();
-
-            public ScrollAnimationState(ScrollViewer sv)
-            {
-                _sv = sv;
-            }
-
-            public void StartAnimation(Vector target)
-            {
-                _from = _sv.Offset;
-                _to = target;
-                _startTicks = DateTime.Now.Ticks;
-
-                if (_timer == null)
-                {
-                    _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(16), DispatcherPriority.Render, OnTick);
-                    _timer.Start();
-                }
-            }
-
-            public void Stop()
-            {
-                _timer?.Stop();
-                _timer = null;
-            }
-
-            private void OnTick(object? sender, EventArgs e)
-            {
-                var elapsedTicks = DateTime.Now.Ticks - _startTicks;
-                if (elapsedTicks >= _durationTicks)
-                {
-                    _sv.Offset = _to;
-                    _timer?.Stop();
-                    _timer = null;
-                    return;
-                }
-
-                var t = (double)elapsedTicks / _durationTicks;
-                var easedT = _easing.Ease((float)t);
-                _sv.Offset = _from + (_to - _from) * easedT;
-            }
-        }
     }
 }

@@ -1,0 +1,116 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:OnePointUI.Avalonia.Styling.Controls.OnePointControls">
+    <Design.PreviewWith>
+        <Border Padding="20"
+                Background="{DynamicResource BackgroundBrush}">
+            <StackPanel Spacing="16">
+                <controls:SearchBox Size="Large"
+                                    PlaceholderText="Large search box" />
+                <controls:SearchBox Size="Small"
+                                    PlaceholderText="Small search box" />
+                <controls:SearchBox Size="Large"
+                                    IsExpanded="True"
+                                    Text="Expanded" />
+                <controls:SearchBox Size="Small"
+                                    IsExpanded="True"
+                                    Text="Expanded" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!--
+        默认（Small）：36px 高，圆角 6，与 OnePointUI 的 TextBox 默认几何一致。
+        收起宽度 = 高度，于是收起态就是一个和其它 icon-button 同尺寸的方形按钮。
+    -->
+    <Style Selector="controls|SearchBox">
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
+        <Setter Property="CollapsedWidth" Value="36" />
+        <Setter Property="ExpandedWidth" Value="220" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!-- 宽度由组件按展开状态写入，过渡在下方样式中声明。 -->
+                <Grid Name="PART_Root"
+                      Height="{TemplateBinding Height}"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      ClipToBounds="True">
+                    <TextBox Name="PART_Input"
+                             Padding="{TemplateBinding Padding}"
+                             FontSize="{TemplateBinding FontSize}"
+                             CornerRadius="{TemplateBinding CornerRadius}"
+                             PlaceholderText="{TemplateBinding PlaceholderText}"
+                             VerticalContentAlignment="Center" />
+
+                    <!-- 收起态：单图标按钮，位置固定在组件的右端，展开时向左生长。 -->
+                    <Button Name="PART_SearchButton"
+                            Width="{TemplateBinding CollapsedWidth}"
+                            Height="{TemplateBinding Height}"
+                            Padding="0"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Stretch">
+                        <controls:FontIcon Name="PART_Icon"
+                                           Glyph="{TemplateBinding Glyph}"
+                                           FontSize="14" />
+                    </Button>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <!-- Large：44px 高，圆角 8，与页面主工具条上的 44px 按钮对齐。 -->
+    <Style Selector="controls|SearchBox.large">
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CollapsedWidth" Value="44" />
+        <Setter Property="ExpandedWidth" Value="240" />
+    </Style>
+
+    <!--
+        展开/收起：只动画容器宽度，输入框自身继续保持布局不变；输入框的
+        透明度切换让内容随宽度一起出现，而不是先于容器弹出。
+    -->
+    <Style Selector="controls|SearchBox /template/ Grid#PART_Root">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Width"
+                                  Duration="0:0:0.22"
+                                  Easing="CubicEaseOut" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|SearchBox /template/ TextBox#PART_Input">
+        <Setter Property="Opacity" Value="0" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity"
+                                  Duration="0:0:0.16"
+                                  Easing="CubicEaseOut" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|SearchBox:expanded /template/ TextBox#PART_Input">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <Style Selector="controls|SearchBox.large /template/ controls|FontIcon#PART_Icon">
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+
+    <!--
+        收起后如果仍有关键字，图标改用强调色：搜索条件还在生效，不能让用户
+        以为筛选被清掉了。
+    -->
+    <Style Selector="controls|SearchBox:has-text /template/ controls|FontIcon#PART_Icon">
+        <Setter Property="Foreground" Value="{DynamicResource AccentBackgroundBrush}" />
+    </Style>
+</Styles>

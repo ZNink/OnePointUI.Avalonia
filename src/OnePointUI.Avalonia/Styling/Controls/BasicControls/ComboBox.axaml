@@ -65,8 +65,10 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <DataValidationErrors>
-                    <Grid>
+                    <!--  两列：左边是文本区，右边是固定的箭头区。文本永远不会进入箭头列。  -->
+                    <Grid x:Name="Root" ColumnDefinitions="*,32">
                         <Border x:Name="Background"
+                                Grid.ColumnSpan="2"
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
@@ -82,81 +84,97 @@
                             </Border>
                         </Border>
 
-                        <TextBlock x:Name="PlaceholderTextBlock"
-                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                   Margin="{TemplateBinding Padding}"
-                                   Text="{TemplateBinding PlaceholderText}"
-                                   Foreground="{TemplateBinding PlaceholderForeground}">
-                            <TextBlock.IsVisible>
-                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                    <Binding Path="SelectionBoxItem" RelativeSource="{RelativeSource TemplatedParent}"
-                                             Converter="{x:Static ObjectConverters.IsNull}" />
+                        <!--  文本区：自带裁剪，超长文本在进入箭头区之前就被截断  -->
+                        <Panel x:Name="ContentZone"
+                               Grid.Column="0"
+                               Margin="{TemplateBinding Padding}"
+                               ClipToBounds="True">
+                            <TextBlock x:Name="PlaceholderTextBlock"
+                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                       Text="{TemplateBinding PlaceholderText}"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       Foreground="{TemplateBinding PlaceholderForeground}">
+                                <TextBlock.IsVisible>
+                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                        <Binding Path="SelectionBoxItem" RelativeSource="{RelativeSource TemplatedParent}"
+                                                 Converter="{x:Static ObjectConverters.IsNull}" />
+                                        <Binding Path="!IsEditable" RelativeSource="{RelativeSource TemplatedParent}" />
+                                    </MultiBinding>
+                                </TextBlock.IsVisible>
+                            </TextBlock>
+                            <ContentPresenter x:Name="ContentPresenter"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <ContentPresenter.IsVisible>
                                     <Binding Path="!IsEditable" RelativeSource="{RelativeSource TemplatedParent}" />
-                                </MultiBinding>
-                            </TextBlock.IsVisible>
-                        </TextBlock>
-                        <ContentControl x:Name="ContentPresenter"
-                                        Content="{TemplateBinding SelectionBoxItem}"
-                                        Margin="{TemplateBinding Padding}"
-                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                </ContentPresenter.IsVisible>
+                            </ContentPresenter>
 
-                        <Border Width="14" Height="8"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Margin="0,-4,12,0"
-                                Name="PATH_Cross" RenderTransform="rotate(-45deg)">
-                            <Grid>
-                                <Border Width="8" Height="2"
-                                        VerticalAlignment="Bottom"
-                                        CornerRadius="3"
-                                        Background="{DynamicResource PrimaryForegroundBrush}" />
-                                <Border Width="8" Height="2"
-                                        HorizontalAlignment="Left"
-                                        CornerRadius="3"
-                                        Background="{DynamicResource PrimaryForegroundBrush}">
-                                    <Border.RenderTransform>
-                                        <RotateTransform Angle="90" />
-                                    </Border.RenderTransform>
-                                </Border>
-                            </Grid>
+                            <TextBox Name="PART_EditableTextBox"
+                                     Padding="0"
+                                     Text="{TemplateBinding Text, Mode=TwoWay}"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                     Foreground="{TemplateBinding Foreground}"
+                                     Background="Transparent"
+                                     IsVisible="{TemplateBinding IsEditable}"
+                                     BorderThickness="0">
+                                <TextBox.Resources>
+                                    <SolidColorBrush x:Key="TextControlBackgroundFocused">Transparent</SolidColorBrush>
+                                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver">Transparent</SolidColorBrush>
+                                    <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
+                                </TextBox.Resources>
+                            </TextBox>
+                        </Panel>
 
-                            <Border.Transitions>
-                                <Transitions>
-                                    <TransformOperationsTransition Duration="0:0:.35"
-                                                                   Property="RenderTransform"
-                                                                   Easing="ExponentialEaseOut" />
-                                    <ThicknessTransition Duration="0:0:.35"
-                                                         Property="Margin"
-                                                         Easing="ExponentialEaseOut" />
-                                </Transitions>
-                            </Border.Transitions>
+                        <!--  箭头区：独占一列，只负责画箭头，不参与文本布局  -->
+                        <Border x:Name="ArrowZone"
+                                Grid.Column="1"
+                                Background="Transparent">
+                            <Border Width="14" Height="8"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Margin="0,-4,12,0"
+                                    Name="PATH_Cross" RenderTransform="rotate(-45deg)">
+                                <Grid>
+                                    <Border Width="8" Height="2"
+                                            VerticalAlignment="Bottom"
+                                            CornerRadius="3"
+                                            Background="{DynamicResource PrimaryForegroundBrush}" />
+                                    <Border Width="8" Height="2"
+                                            HorizontalAlignment="Left"
+                                            CornerRadius="3"
+                                            Background="{DynamicResource PrimaryForegroundBrush}">
+                                        <Border.RenderTransform>
+                                            <RotateTransform Angle="90" />
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Grid>
+
+                                <Border.Transitions>
+                                    <Transitions>
+                                        <TransformOperationsTransition Duration="0:0:.35"
+                                                                       Property="RenderTransform"
+                                                                       Easing="ExponentialEaseOut" />
+                                        <ThicknessTransition Duration="0:0:.35"
+                                                             Property="Margin"
+                                                             Easing="ExponentialEaseOut" />
+                                    </Transitions>
+                                </Border.Transitions>
+                            </Border>
                         </Border>
 
-                        <TextBox Name="PART_EditableTextBox"
-                                 Grid.Column="0"
-                                 Padding="{TemplateBinding Padding}"
-                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                 Foreground="{TemplateBinding Foreground}"
-                                 Background="Transparent"
-                                 IsVisible="False"
-                                 BorderThickness="0">
-                            <TextBox.Resources>
-                                <SolidColorBrush x:Key="TextControlBackgroundFocused">Transparent</SolidColorBrush>
-                                <SolidColorBrush x:Key="TextControlBackgroundPointerOver">Transparent</SolidColorBrush>
-                                <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
-                            </TextBox.Resources>
-                        </TextBox>
-
+                        <!--  可编辑模式下盖住箭头区：点箭头是展开下拉，而不是把光标移进去  -->
                         <Border x:Name="DropDownOverlay"
                                 Grid.Column="1"
                                 Background="Transparent"
                                 Margin="0,1,1,1"
                                 Width="30"
-                                IsVisible="False"
+                                IsVisible="{TemplateBinding IsEditable}"
                                 HorizontalAlignment="Right" />
 
                         <Popup Name="PART_Popup"
@@ -216,6 +234,15 @@
                 </DataValidationErrors>
             </ControlTemplate>
         </Setter>
+    </Style>
+
+    <!--
+        文本区里的文本统一单行省略：
+        自定义 SelectionBoxItemTemplate 里没写 TextTrimming 的 TextBlock 也按省略号截断，
+        不会一路顶到箭头区边界再被硬裁。
+    -->
+    <Style Selector="ComboBox /template/ Panel#ContentZone TextBlock">
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
     <!--  PointerOver State  -->

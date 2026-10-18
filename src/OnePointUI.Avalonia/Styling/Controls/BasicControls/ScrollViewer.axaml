@@ -1,6 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:behaviors="using:OnePointUI.Avalonia.Behaviors"
+        xmlns:controls="using:OnePointUI.Avalonia.Controls"
         xmlns:converters="using:OnePointUI.Avalonia.Converters">
 
     <Styles.Resources>
@@ -29,12 +30,11 @@
     <Style Selector="ScrollViewer">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="IsScrollInertiaEnabled" Value="True" />
-        <Setter Property="behaviors:ScrollViewerSmoothScroll.EnableSmoothScroll" Value="True" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
                     
-                    <ScrollContentPresenter
+                    <controls:SmoothScrollContentPresenter
                         Name="PART_ContentPresenter"
                         Grid.Row="0"
                         Grid.Column="0"
@@ -46,17 +46,18 @@
                         HorizontalSnapPointsAlignment="{TemplateBinding HorizontalSnapPointsAlignment}"
                         VerticalSnapPointsAlignment="{TemplateBinding VerticalSnapPointsAlignment}"
                         Padding="{TemplateBinding Padding}"
+                        IsSmoothScrollingEnabled="{TemplateBinding (behaviors:ScrollViewerSmoothScroll.EnableSmoothScroll)}"
                         ScrollViewer.IsScrollInertiaEnabled="{TemplateBinding IsScrollInertiaEnabled}">
                         
-                        <ScrollContentPresenter.OpacityMask>
+                        <controls:SmoothScrollContentPresenter.OpacityMask>
                             <MultiBinding Converter="{StaticResource ScrollViewerOpacityMaskConverter}">
                                 <Binding Path="Offset.Y" RelativeSource="{RelativeSource TemplatedParent}" />
                                 <Binding Path="Extent.Height" RelativeSource="{RelativeSource TemplatedParent}" />
                                 <Binding Path="Viewport.Height" RelativeSource="{RelativeSource TemplatedParent}" />
                             </MultiBinding>
-                        </ScrollContentPresenter.OpacityMask>
+                        </controls:SmoothScrollContentPresenter.OpacityMask>
                         
-                    </ScrollContentPresenter>
+                    </controls:SmoothScrollContentPresenter>
 
                     <ScrollBar Name="PART_HorizontalScrollBar"
                                Orientation="Horizontal"
@@ -83,7 +84,7 @@
         <Style Selector="^[IsExpanded=true] /template/ Panel#PART_ScrollBarsSeparator">
             <Setter Property="Opacity" Value="1" />
         </Style>
-        <Style Selector="^[AllowAutoHide=True] /template/ ScrollContentPresenter#PART_ContentPresenter">
+        <Style Selector="^[AllowAutoHide=True] /template/ controls|SmoothScrollContentPresenter#PART_ContentPresenter">
             <Setter Property="Grid.ColumnSpan" Value="2" />
             <Setter Property="Grid.RowSpan" Value="2" />
         </Style>
