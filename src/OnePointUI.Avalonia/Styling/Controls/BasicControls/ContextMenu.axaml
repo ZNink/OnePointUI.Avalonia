@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:behaviors="using:OnePointUI.Avalonia.Behaviors">
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Width="160" Spacing="6">
@@ -8,23 +9,202 @@
         </Border>
     </Design.PreviewWith>
 
+    <!--
+        右键菜单视觉与交互约定（详见 docs/development/onepointui-design.md §6.5）：
+        - 背景为两层：PART_BackdropBlur 玻璃层（MenuEffects 打开时用宿主窗口
+          快照 + BlurEffect 铺出真模糊）在下，PART_Backdrop 色调层在上
+          （玻璃层就绪时切到 MenuGlassBackdropBrush，约 40% 不透明）。
+        - 展开动画（opening 类，180ms CubicEaseOut）：淡入 + 上移 8px + 轻微放大；
+          关闭动画（closing 类，130ms CubicEaseIn）：反向。类由 MenuEffects 行为挂载，
+          每次打开/关闭都会重播。
+        - PART_Highlight 是共享的滑动高亮层，悬停在选项之间时由行为驱动其
+          Canvas.Top / Height / Opacity 平滑过渡（160ms CubicEaseOut）。
+        - 全部选项都没有图标时行为给菜单挂 no-icons 类，收起图标列。
+    -->
     <Style Selector="ContextMenu">
-        <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryBrush}" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="4" />
+        <Setter Property="behaviors:MenuEffects.IsEnabled" Value="True" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="{TemplateBinding Background}"
+                <Border Name="PART_MenuRoot"
+                        Background="Transparent"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}"
-                        Padding="{TemplateBinding Padding}">
-                    <ItemsPresenter Name="PART_ItemsPresenter"
-                                    ItemsPanel="{TemplateBinding ItemsPanel}" />
+                        ClipToBounds="True">
+                    <!-- 开/关动画沿 Y 平移：Avalonia 12 的关键帧动画只对
+                         Transform 上的 double 属性（如 TranslateTransform.Y）
+                         内置 animator，TransformOperations 需要手动注册。 -->
+                    <Border.RenderTransform>
+                        <TranslateTransform />
+                    </Border.RenderTransform>
+                    <Panel>
+                        <!-- 玻璃底层：MenuEffects 在菜单打开时把宿主窗口快照按
+                             本菜单位置裁剪、挂 BlurEffect 铺在这里（隐藏状态，
+                             捕获失败时保持隐藏，菜单回落实心卡片）。 -->
+                        <Border Name="PART_BackdropBlur"
+                                IsVisible="False"
+                                IsHitTestVisible="False" />
+                        <!-- 菜单色调层：普通半透明 Border（MenuBackdropBrush）。
+                             玻璃层生效时行为给本层挂 glass 类，背景切换到
+                             MenuGlassBackdropBrush（约 40% 不透明），
+                             让下层模糊透出来；没有玻璃层时用不透明的
+                             MenuBackdropBrush 保证可读性。
+                             不要用 DWM acrylic / ExperimentalAcrylicBorder：
+                             弹层是独立顶层窗口，前者在 PopupImpl 上只得到
+                             一块不透明灰板，后者在 PopupRoot 里没有可采样的
+                             下层内容，同样是灰板。 -->
+                        <Border Name="PART_Backdrop"
+                                Background="{DynamicResource MenuBackdropBrush}"
+                                IsHitTestVisible="False">
+                            <Panel>
+                                <!-- 玻璃高光/边缘高光：只在玻璃层就绪（行为挂 glass
+                                     类）时显示。遮罩降到 40% 后，靠这两层维持
+                                     「玻璃面」的反光与轮廓，避免菜单和背景糊在一起。 -->
+                                <Border Name="PART_GlassSheen"
+                                        Background="{DynamicResource MenuGlassSheenBrush}"
+                                        IsVisible="False"
+                                        IsHitTestVisible="False" />
+                                <Border Name="PART_GlassRim"
+                                        BorderBrush="{DynamicResource MenuGlassRimBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        IsVisible="False"
+                                        IsHitTestVisible="False" />
+                            </Panel>
+                        </Border>
+
+                        <!-- 共享滑动高亮：与项区同边距，几何由 MenuEffects 行为驱动。
+                             左缘的 PART_Indicator 是侧边栏选中样式同款指示条
+                             （3px 纵向渐变，出现时从 scale(0,1) 生长到 scale(1,1)）。 -->
+                        <Canvas Name="PART_HighlightHost"
+                                Margin="{TemplateBinding Padding}"
+                                IsHitTestVisible="False">
+                            <Border Name="PART_Highlight"
+                                    CornerRadius="4"
+                                    Background="{DynamicResource NavigationRailSelectedBrush}"
+                                    Opacity="0"
+                                    IsHitTestVisible="False">
+                                <!-- 位置沿 Y 平移（Canvas.Top 的过渡插值在无头/真机均不可靠，
+                                     TranslateTransform.Y 与让位动画同一套路）。 -->
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="0">
+                                        <TranslateTransform.Transitions>
+                                            <Transitions>
+                                                <DoubleTransition Property="TranslateTransform.Y"
+                                                                  Duration="0:0:0.16"
+                                                                  Easing="CubicEaseOut" />
+                                            </Transitions>
+                                        </TranslateTransform.Transitions>
+                                    </TranslateTransform>
+                                </Border.RenderTransform>
+                                <Border.Transitions>
+                                    <Transitions>
+                                        <DoubleTransition Property="Border.Height"
+                                                          Duration="0:0:0.16"
+                                                          Easing="CubicEaseOut" />
+                                        <DoubleTransition Property="Border.Opacity"
+                                                          Duration="0:0:0.1"
+                                                          Easing="CubicEaseOut" />
+                                    </Transitions>
+                                </Border.Transitions>
+                                <!-- 动态进度条指示条：与 OnePointNavigationRailItem 的
+                                     PART_Indicator 同参数（0.18s QuarticEaseOut 生长）。 -->
+                                <Border Name="PART_Indicator"
+                                        Width="3"
+                                        Margin="0,4"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Stretch"
+                                        CornerRadius="2"
+                                        Background="{DynamicResource NavigationRailIndicatorBrush}"
+                                        Opacity="0"
+                                        RenderTransform="translate(-4px,0) scale(0,1)"
+                                        RenderTransformOrigin="0,0.5"
+                                        IsHitTestVisible="False">
+                                    <Border.Transitions>
+                                        <Transitions>
+                                            <TransformOperationsTransition Property="RenderTransform"
+                                                                           Duration="0:0:0.18"
+                                                                           Easing="QuarticEaseOut" />
+                                            <DoubleTransition Property="Border.Opacity"
+                                                              Duration="0:0:0.16"
+                                                              Easing="ExponentialEaseOut" />
+                                        </Transitions>
+                                    </Border.Transitions>
+                                </Border>
+                            </Border>
+                        </Canvas>
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        Margin="{TemplateBinding Padding}"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </Panel>
                 </Border>
             </ControlTemplate>
         </Setter>
+    </Style>
+
+    <!-- 玻璃层就绪（行为已铺好宿主快照）：色调层切到约 40% 不透明的
+         MenuGlassBackdropBrush，保留模糊底色的透出；没有该类的平台
+         （无头/快照失败）继续用不透明的 MenuBackdropBrush。 -->
+    <Style Selector="ContextMenu /template/ Border#PART_Backdrop.glass">
+        <Setter Property="Background" Value="{DynamicResource MenuGlassBackdropBrush}" />
+    </Style>
+
+    <!-- 玻璃模式才显示的高光层：低遮罩下提供反光与边缘轮廓。 -->
+    <Style Selector="ContextMenu /template/ Border#PART_Backdrop.glass Border#PART_GlassSheen">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="ContextMenu /template/ Border#PART_Backdrop.glass Border#PART_GlassRim">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <!-- 展开动画：淡入 + 上浮就位（行为每次打开挂 opening 类，播完摘除）。 -->
+    <Style Selector="ContextMenu /template/ Border#PART_MenuRoot.opening">
+        <Style.Animations>
+            <Animation Duration="0:0:0.18" Easing="CubicEaseOut" FillMode="Forward">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="0" />
+                    <Setter Property="TranslateTransform.Y" Value="-8" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="1" />
+                    <Setter Property="TranslateTransform.Y" Value="0" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- 关闭动画：淡出 + 轻微上收（行为取消第一次关闭、挂类播完再真正关闭）。 -->
+    <Style Selector="ContextMenu /template/ Border#PART_MenuRoot.closing">
+        <Style.Animations>
+            <Animation Duration="0:0:0.13" Easing="CubicEaseIn" FillMode="Forward">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="1" />
+                    <Setter Property="TranslateTransform.Y" Value="0" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="0" />
+                    <Setter Property="TranslateTransform.Y" Value="-6" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- 无图标模式：整个菜单没有任何带图标的选项时收起图标列。 -->
+    <Style Selector="ContextMenu.no-icons MenuItem /template/ ContentPresenter#PART_IconPresenter">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <!--
+        悬停反馈由共享高亮层（选中底色 + 侧边栏同款指示条）统一呈现；
+        MenuItem 自身的 :pointerover 浓底色在菜单内关闭，避免两层叠色
+        偏离侧边栏选中样式的观感。顶级菜单栏（Menu 的 PART_Header）不受影响。
+    -->
+    <Style Selector="ContextMenu MenuItem:pointerover /template/ Border#PART_Root">
+        <Setter Property="Background" Value="Transparent" />
     </Style>
 </Styles>

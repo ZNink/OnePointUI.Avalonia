@@ -89,24 +89,76 @@
                         Background="{TemplateBinding Background}"
                         CornerRadius="{TemplateBinding CornerRadius}"
                         Padding="{TemplateBinding Padding}">
-                    <Grid ColumnDefinitions="Auto,*,Auto">
-                        <ContentPresenter Grid.Column="0"
-                                          Name="PART_IconPresenter"
-                                          Content="{TemplateBinding Icon}"
-                                          Width="16" Height="16"
-                                          Margin="0,0,8,0" />
-                        <ContentPresenter Grid.Column="1"
-                                          Name="PART_HeaderPresenter"
-                                          Content="{TemplateBinding Header}"
-                                          ContentTemplate="{TemplateBinding HeaderTemplate}"
-                                          RecognizesAccessKey="True"
-                                          VerticalAlignment="Center" />
-                        <TextBlock Grid.Column="2"
-                                   Text="{TemplateBinding InputGesture}"
-                                   Margin="16,0,0,0"
-                                   Foreground="{DynamicResource PrimaryDisabledForegroundBrush}"
-                                   VerticalAlignment="Center" />
-                    </Grid>
+                    <Panel>
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <!-- 图标列固定占位：没有图标的选项也保留 16+8 缩进，
+                                 与带图标的选项文字对齐；整菜单都无图标时由
+                                 MenuEffects 挂 no-icons 类整体收起。 -->
+                            <ContentPresenter Grid.Column="0"
+                                              Name="PART_IconPresenter"
+                                              Content="{TemplateBinding Icon}"
+                                              Width="16" Height="16"
+                                              Margin="0,0,8,0"
+                                              VerticalAlignment="Center" />
+                            <ContentPresenter Grid.Column="1"
+                                              Name="PART_HeaderPresenter"
+                                              Content="{TemplateBinding Header}"
+                                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                              RecognizesAccessKey="True"
+                                              VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2"
+                                       Text="{TemplateBinding InputGesture}"
+                                       Margin="16,0,0,0"
+                                       Foreground="{DynamicResource PrimaryDisabledForegroundBrush}"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        <!-- 子菜单弹出层：与 ContextMenu 一致的毛玻璃与圆角。
+                             打开/关闭动画目前只做在 ContextMenu 上，子菜单保持直落。 -->
+                        <Popup Name="PART_Popup"
+                               Placement="Right"
+                               IsLightDismissEnabled="False"
+                               WindowManagerAddShadowHint="False">
+                            <Border Name="PART_SubMenuBorder"
+                                    Background="Transparent"
+                                    BorderBrush="{DynamicResource PrimaryBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    ClipToBounds="True">
+                                <Panel>
+                                    <!-- 玻璃底层：MenuEffects 复用主菜单打开时
+                                         截好的宿主快照，按本子菜单位置裁剪铺在这里。 -->
+                                    <Border Name="PART_SubMenuBackdropBlur"
+                                            IsVisible="False"
+                                            IsHitTestVisible="False" />
+                                    <!-- 与 ContextMenu 同款色调层（普通半透明 Border）：
+                                         玻璃层就绪时挂 glass 类切换到
+                                         MenuGlassBackdropBrush；不要用 DWM acrylic，
+                                         弹层上它只得到不透明灰板。 -->
+                                    <Border Name="PART_SubMenuTint"
+                                            Background="{DynamicResource MenuBackdropBrush}"
+                                            IsHitTestVisible="False">
+                                        <Panel>
+                                            <Border Name="PART_SubMenuSheen"
+                                                    Background="{DynamicResource MenuGlassSheenBrush}"
+                                                    IsVisible="False"
+                                                    IsHitTestVisible="False" />
+                                            <Border Name="PART_SubMenuRim"
+                                                    BorderBrush="{DynamicResource MenuGlassRimBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="8"
+                                                    IsVisible="False"
+                                                    IsHitTestVisible="False" />
+                                        </Panel>
+                                    </Border>
+                                    <ScrollViewer MaxHeight="480"
+                                                  Margin="4"
+                                                  Padding="0">
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Panel>
+                            </Border>
+                        </Popup>
+                    </Panel>
                 </Border>
             </ControlTemplate>
         </Setter>
@@ -118,14 +170,15 @@
         <Style Selector="^:disabled">
             <Setter Property="Opacity" Value="0.5" />
         </Style>
+    </Style>    <!-- 子菜单玻璃层就绪：与主菜单同款高透明度色调（约 40%）。 -->
+    <Style Selector="Border#PART_SubMenuTint.glass">
+        <Setter Property="Background" Value="{DynamicResource MenuGlassBackdropBrush}" />
+    </Style>
+    <Style Selector="Border#PART_SubMenuTint.glass Border#PART_SubMenuSheen">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="Border#PART_SubMenuTint.glass Border#PART_SubMenuRim">
+        <Setter Property="IsVisible" Value="True" />
     </Style>
 
-    <!-- 子菜单的弹出面板 -->
-    <Style Selector="MenuItem > Popup > Border">
-        <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="6" />
-        <Setter Property="Padding" Value="4" />
-    </Style>
 </Styles>

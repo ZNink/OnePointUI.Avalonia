@@ -113,6 +113,30 @@ public class ThemeManager
             darkTheme["NavigationRailBackgroundBrush"] = new SolidColorBrush(Color.Parse("#D92A2A2A"));
             darkTheme["NavigationRailBorderBrush"] = new SolidColorBrush(Color.Parse("#3F3F3F"));
 
+            // 右键菜单色调层（PART_Backdrop 的兜底底色）：玻璃层不可用时
+            // （无头平台、宿主快照失败）用这层较高不透明度的深色保证可读性。
+            darkTheme["MenuBackdropBrush"] = new SolidColorBrush(Color.Parse("#D91E1F22"));
+            // 玻璃层就绪时的色调层：约 40% 不透明。Pulsar 主窗口背景本身偏暗且
+            // 色差小，遮罩越不透明，模糊携带的明暗差被压得越平（合成时按
+            // 1 - alpha 衰减）。40% 是「模糊明显 + 文字可读」的平衡点；再低
+            // 需要配合下面的玻璃高光/描边，否则菜单会和背景糊在一起。
+            darkTheme["MenuGlassBackdropBrush"] = new SolidColorBrush(Color.Parse("#661E1F22"));
+            // 玻璃高光：顶部约 8% 的白色反光渐隐到透明。低遮罩下维持「玻璃面」
+            // 的反光感，避免菜单退化成纯色半透明板。
+            darkTheme["MenuGlassSheenBrush"] = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+                GradientStops =
+                {
+                    new GradientStop(Color.Parse("#14FFFFFF"), 0),
+                    new GradientStop(Color.Parse("#05FFFFFF"), 0.5),
+                    new GradientStop(Color.Parse("#00FFFFFF"), 1),
+                },
+            };
+            // 玻璃边缘高光：1px 内描边，替代普通主题边框在深色背景上的观感。
+            darkTheme["MenuGlassRimBrush"] = new SolidColorBrush(Color.Parse("#26FFFFFF"));
+
             #endregion
 
             #region 浅色主题
@@ -155,6 +179,21 @@ public class ThemeManager
 
             lightTheme["NavigationRailBackgroundBrush"] = new SolidColorBrush(Color.Parse("#E8FFFFFF"));
             lightTheme["NavigationRailBorderBrush"] = new SolidColorBrush(Color.Parse("#D4D4D4"));
+
+            lightTheme["MenuBackdropBrush"] = new SolidColorBrush(Color.Parse("#F0FAFAFA"));
+            // 浅色主题同款：60% 白色遮罩 + 更淡的顶部反光、深色边缘高光。
+            lightTheme["MenuGlassBackdropBrush"] = new SolidColorBrush(Color.Parse("#99FAFAFA"));
+            lightTheme["MenuGlassSheenBrush"] = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+                GradientStops =
+                {
+                    new GradientStop(Color.Parse("#0DFFFFFF"), 0),
+                    new GradientStop(Color.Parse("#00FFFFFF"), 1),
+                },
+            };
+            lightTheme["MenuGlassRimBrush"] = new SolidColorBrush(Color.Parse("#1A000000"));
 
             #endregion
 

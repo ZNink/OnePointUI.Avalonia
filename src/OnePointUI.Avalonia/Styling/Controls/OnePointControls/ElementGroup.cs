@@ -46,8 +46,8 @@ public class ElementGroup : ItemsControl
     private void UpdateOrientation()
     {
         ItemsPanel = Orientation == AvaloniaOrientation.Horizontal
-            ? new FuncTemplate<Panel>(() => new StackPanel { Orientation = AvaloniaOrientation.Horizontal })
-            : new FuncTemplate<Panel>(() => new StackPanel { Orientation = AvaloniaOrientation.Vertical });
+            ? new FuncTemplate<Panel?>(() => new StackPanel { Orientation = AvaloniaOrientation.Horizontal })
+            : new FuncTemplate<Panel?>(() => new StackPanel { Orientation = AvaloniaOrientation.Vertical });
 
         UpdateElements();
     }

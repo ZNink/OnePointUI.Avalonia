@@ -53,7 +53,7 @@ public sealed class DragDropEventArgs : RoutedEventArgs
     public DragPayload Payload { get; }
 
     /// <summary>发起拖拽的控件。</summary>
-    public Control Source { get; }
+    public new Control Source { get; }
 }
 
 /// <summary>拖拽过程中指针移动的参数。</summary>
