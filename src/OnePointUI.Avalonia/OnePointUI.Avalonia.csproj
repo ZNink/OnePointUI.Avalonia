@@ -10,6 +10,8 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="Pulsar.Tests" />
+        <!-- 自适应控件实测窗口（tools/adaptive-window-test）需要读取 IsDynamicEffective 等内部状态。 -->
+        <InternalsVisibleTo Include="AdaptiveWindowTest" />
     </ItemGroup>
 
     <ItemGroup>

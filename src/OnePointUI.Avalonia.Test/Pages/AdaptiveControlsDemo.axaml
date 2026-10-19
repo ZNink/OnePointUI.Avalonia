@@ -1,0 +1,134 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.openxmlformats.org/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:onePointControls="clr-namespace:OnePointUI.Avalonia.Styling.Controls.OnePointControls;assembly=OnePointUI.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="OnePointUI.Avalonia.Test.Pages.AdaptiveControlsDemo">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="16" Spacing="20">
+
+            <!--
+                自适应演示：左侧容器宽度可拖拽调整，两个控件都参考「父级宽度」
+                在正常样式与动态样式之间切换（默认阈值 640）。
+            -->
+            <onePointControls:LineTextBlock Text="自适应演示（拖拽分隔条调整左侧容器宽度）"
+                                            FontSize="16" FontWeight="SemiBold" />
+            <Grid ColumnDefinitions="*,8,Auto" Height="120">
+                <Border Grid.Column="0"
+                        x:Name="AdaptiveHost"
+                        Background="{DynamicResource BackgroundSecondaryBrush}"
+                        BorderBrush="{DynamicResource PrimaryBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="12">
+                    <StackPanel Spacing="12" VerticalAlignment="Center">
+                        <TextBlock Text="分类选择框（SegmentedButton · Adaptive）"
+                                   Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                        <onePointControls:SegmentedButton x:Name="AdaptiveSegmented"
+                                                          DisplayMode="Adaptive"
+                                                          AdaptiveThresholdWidth="360"
+                                                          SelectedIndex="0">
+                            <onePointControls:SegmentedButtonItem Content="全部" Glyph="&#xE8FC;" />
+                            <onePointControls:SegmentedButtonItem Content="已购买" Glyph="&#xE7FC;" />
+                            <onePointControls:SegmentedButtonItem Content="市场" Glyph="&#xE80A;" />
+                            <onePointControls:SegmentedButtonItem Content="本地" />
+                        </onePointControls:SegmentedButton>
+
+                        <TextBlock Text="按钮集群（ButtonCluster · Adaptive）"
+                                   Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                        <onePointControls:ButtonCluster x:Name="AdaptiveCluster"
+                                                        DisplayMode="Adaptive"
+                                                        AdaptiveThresholdWidth="360">
+                            <onePointControls:ButtonClusterItem Content="启动" Glyph="&#xE7FC;" IsHighlighted="True" />
+                            <onePointControls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
+                            <onePointControls:ButtonClusterItem Content="日志" Glyph="&#xE9D2;" />
+                        </onePointControls:ButtonCluster>
+                    </StackPanel>
+                </Border>
+                <GridSplitter Grid.Column="1"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Background="Transparent" />
+                <Border Grid.Column="2" Width="40" />
+            </Grid>
+
+            <!-- 三套样式并排对照 -->
+            <onePointControls:LineTextBlock Text="SegmentedButton 三套样式"
+                                            FontSize="16" FontWeight="SemiBold" />
+            <StackPanel Spacing="16">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="正常样式（默认）" Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                    <onePointControls:SegmentedButton SelectedIndex="0">
+                        <onePointControls:SegmentedButtonItem Content="Classic" Glyph="&#xE8FC;" />
+                        <onePointControls:SegmentedButtonItem Content="Bedrock" Glyph="&#xE790;" />
+                        <onePointControls:SegmentedButtonItem Content="Developer" Glyph="&#xE9D2;" />
+                    </onePointControls:SegmentedButton>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="动态样式（仅选中项展开，其余仅图标 / 首字符，悬停不展开）"
+                               Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                    <onePointControls:SegmentedButton SelectedIndex="0" DisplayMode="Dynamic">
+                        <onePointControls:SegmentedButtonItem Content="Classic" Glyph="&#xE8FC;" />
+                        <onePointControls:SegmentedButtonItem Content="Bedrock" Glyph="&#xE790;" />
+                        <onePointControls:SegmentedButtonItem Content="Developer" />
+                    </onePointControls:SegmentedButton>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="动态样式 + 无图标项（首字符头像）"
+                               Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                    <onePointControls:SegmentedButton SelectedIndex="1" DisplayMode="Dynamic">
+                        <onePointControls:SegmentedButtonItem Content="全部" />
+                        <onePointControls:SegmentedButtonItem Content="已购买" />
+                        <onePointControls:SegmentedButtonItem Content="市场" />
+                    </onePointControls:SegmentedButton>
+                </StackPanel>
+            </StackPanel>
+
+            <onePointControls:LineTextBlock Text="ButtonCluster 三套样式"
+                                            FontSize="16" FontWeight="SemiBold" />
+            <StackPanel Spacing="16">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="正常样式（统一面板 + 常规按钮）"
+                               Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                    <onePointControls:ButtonCluster>
+                        <onePointControls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" />
+                        <onePointControls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
+                        <onePointControls:ButtonClusterItem Content="日志" />
+                    </onePointControls:ButtonCluster>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="动态样式（高亮按钮默认展开，悬停展开其余）"
+                               Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                    <onePointControls:ButtonCluster DisplayMode="Dynamic">
+                        <onePointControls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" IsHighlighted="True" />
+                        <onePointControls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
+                        <onePointControls:ButtonClusterItem Content="日志" />
+                    </onePointControls:ButtonCluster>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="动态样式 + 主项不显示文本（ShowPrimaryItemText=False）"
+                               Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                    <onePointControls:ButtonCluster DisplayMode="Dynamic" ShowPrimaryItemText="False">
+                        <onePointControls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" IsHighlighted="True" />
+                        <onePointControls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
+                    </onePointControls:ButtonCluster>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="纵向集群（Orientation=Vertical）"
+                               Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+                    <onePointControls:ButtonCluster Orientation="Vertical" HorizontalAlignment="Left">
+                        <onePointControls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" />
+                        <onePointControls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
+                        <onePointControls:ButtonClusterItem Content="日志" Glyph="&#xE9D2;" />
+                    </onePointControls:ButtonCluster>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

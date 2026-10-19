@@ -1,0 +1,262 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:OnePointUI.Avalonia.Styling.Controls.OnePointControls">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="16">
+                <!-- 正常样式：统一面板包裹常规按钮 -->
+                <controls:ButtonCluster>
+                    <controls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" />
+                    <controls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
+                    <controls:ButtonClusterItem Content="日志" />
+                </controls:ButtonCluster>
+
+                <!-- 动态样式：高亮按钮默认展开，其余仅图标 / 首字符，悬停展开 -->
+                <controls:ButtonCluster DisplayMode="Dynamic">
+                    <controls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" IsHighlighted="True" />
+                    <controls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
+                    <controls:ButtonClusterItem Content="日志" />
+                </controls:ButtonCluster>
+
+                <!-- 动态样式 + 主项不显示文本 -->
+                <controls:ButtonCluster DisplayMode="Dynamic" ShowPrimaryItemText="False">
+                    <controls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" IsHighlighted="True" />
+                    <controls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
+                </controls:ButtonCluster>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!--
+        面板：统一包裹全部按钮。圆角 8、内边距 4、1px 边框、次级背景，
+        与 OnePointUI 卡片几何一致；按钮本身无边框、彼此无缝隙（ItemSpacing
+        默认 0），由面板统一把控视觉一致性。
+    -->
+    <Style Selector="controls|ButtonCluster">
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="0" />
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="PART_Panel"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}"
+                        ClipToBounds="True">
+                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                    ItemsPanel="{TemplateBinding ItemsPanel}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|ButtonClusterItem">
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrushOpacity}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <!-- 动态样式下宽度由代码托管，CubicEaseOut 保证非线性衔接。 -->
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Width"
+                                  Duration="0:0:0.24"
+                                  Easing="CubicEaseOut" />
+            </Transitions>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <!-- 表面层：无边框设计，仅背景 + 状态叠色（Path_Background） -->
+                    <Border Name="Path_Border"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            BorderThickness="0"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}">
+                        <Border Name="Path_Background"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Background="{DynamicResource PrimaryBackgroundOverBrush}"
+                                Opacity="0">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity"
+                                                      Duration="0:0:0.2"
+                                                      Easing="QuinticEaseOut" />
+                                    <BrushTransition Property="Background"
+                                                     Duration="0:0:0.18" />
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+                    </Border>
+
+                    <Border Name="Path_Focus"
+                            Margin="1"
+                            CornerRadius="5"
+                            BorderBrush="{DynamicResource AccentBackgroundBrush}"
+                            BorderThickness="1"
+                            Opacity="0"
+                            IsHitTestVisible="False" />
+
+                    <!--
+                        展开态内容行：图标（有 Glyph 时）+ 文本，整体居中。
+                        无 Glyph 时图标列宽度为 0，与普通按钮的文本居中一致。
+                    -->
+                    <Grid Name="PART_FullRow"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Margin="{TemplateBinding Padding}">
+                        <Grid.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.14"
+                                                  Easing="CubicEaseOut" />
+                            </Transitions>
+                        </Grid.Transitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <controls:FontIcon Name="PART_Icon"
+                                           Grid.Column="0"
+                                           Glyph="{TemplateBinding Glyph}"
+                                           FontSize="14"
+                                           Margin="0,0,8,0"
+                                           VerticalAlignment="Center"
+                                           IsVisible="False" />
+                        <ContentPresenter Name="PART_Content"
+                                          Grid.Column="1"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          IsHitTestVisible="False"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Grid>
+
+                    <!-- 收缩态内容：仅图标 / 首字符头像，在按钮内居中，与展开态交叉淡隐 -->
+                    <Panel Name="PART_CompactRow"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Opacity="0"
+                           IsHitTestVisible="False">
+                        <Panel.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.14"
+                                                  Easing="CubicEaseOut" />
+                            </Transitions>
+                        </Panel.Transitions>
+                        <controls:FontIcon Name="PART_CompactIcon"
+                                           Glyph="{TemplateBinding Glyph}"
+                                           FontSize="14"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           IsVisible="False" />
+                        <Border Name="PART_Avatar"
+                                Width="20"
+                                Height="20"
+                                CornerRadius="10"
+                                Background="{DynamicResource AccentSubtleBrush}"
+                                IsVisible="False">
+                            <TextBlock Name="PART_AvatarText"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource AccentBackgroundBrush}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                    </Panel>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- 无边框设计：悬停不绘制描边，仅抬升背景叠色（压过 Button 基类的描边变化） -->
+        <Style Selector="^:pointerover /template/ Border#Path_Border">
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#Path_Background">
+            <Setter Property="Opacity" Value="0.3" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#Path_Border">
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#Path_Background">
+            <Setter Property="Background" Value="{DynamicResource AccentSubtleBrush}" />
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:focus-visible /template/ Border#Path_Focus">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#Path_Background">
+            <Setter Property="Opacity" Value="0.3" />
+        </Style>
+
+        <!-- 高亮样式：强调色表面 + 高对比前景，视觉语言与 Button.Accent 一致（无描边） -->
+        <Style Selector="^:highlighted /template/ Border#Path_Border">
+            <Setter Property="Background" Value="{DynamicResource AccentBackgroundBrush}" />
+        </Style>
+
+        <Style Selector="^:highlighted /template/ Border#Path_Background">
+            <Setter Property="Background" Value="{DynamicResource AccentBackgroundHoverBrush}" />
+        </Style>
+
+        <Style Selector="^:highlighted /template/ ContentPresenter#PART_Content">
+            <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+        </Style>
+
+        <Style Selector="^:highlighted /template/ controls|FontIcon">
+            <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+        </Style>
+
+        <Style Selector="^:highlighted:pointerover /template/ Border#Path_Background">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <!--
+            动态样式收缩态（宿主广播后由代码挂上的 collapsed 类）：
+            文本行淡出、图标 / 首字符行淡入；解除最小宽度与内边距约束，
+            让按钮收缩到 CollapsedItemWidth（默认 40）。
+        -->
+        <Style Selector="^.collapsed">
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <Style Selector="^.collapsed /template/ Grid#PART_FullRow">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^.collapsed /template/ Panel#PART_CompactRow">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <!-- 主项按规范不显示文本：文本列退出布局，宽度收缩为图标 + 内边距 -->
+        <Style Selector="^.no-text /template/ ContentPresenter#PART_Content">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </Style>
+</Styles>
