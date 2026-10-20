@@ -28,16 +28,13 @@
     </Design.PreviewWith>
 
     <!--
-        面板：统一包裹全部按钮。圆角 8、内边距 4、1px 边框、次级背景，
-        与 OnePointUI 卡片几何一致；按钮本身无边框、彼此无缝隙（ItemSpacing
-        默认 0），由面板统一把控视觉一致性。
+        面板：统一包裹全部按钮，但本身不绘制任何视觉——无边框、无背景，
+        圆角与内边距仅作几何兜底；按钮自身无边框、彼此无缝隙（ItemSpacing
+        默认 0），视觉完全由按钮表面承担。
     -->
     <Style Selector="controls|ButtonCluster">
         <Setter Property="Padding" Value="4" />
         <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="ItemsPanel">
             <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal" Spacing="0" />
