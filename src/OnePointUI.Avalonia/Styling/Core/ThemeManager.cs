@@ -109,9 +109,10 @@ public class ThemeManager
             darkTheme["ShadowBrush"] = new SolidColorBrush(Color.Parse("#80000000"));
             darkTheme["GlowBrush"] = new SolidColorBrush(Color.Parse("#40000000"));
 
-            // 竖直导航栏（激发象限）：容器层与边框层，保持与卡片层级一致的半透明层次
-            darkTheme["NavigationRailBackgroundBrush"] = new SolidColorBrush(Color.Parse("#D92A2A2A"));
-            darkTheme["NavigationRailBorderBrush"] = new SolidColorBrush(Color.Parse("#3F3F3F"));
+            // 贴边侧边栏：容器层与右缘描边层。侧边栏贴在窗口边缘上，底色需要比卡片
+            // 更沉一点才能在背景图/光晕之上立住，同时保留亚克力的透光感。
+            darkTheme["SidebarBackgroundBrush"] = new SolidColorBrush(Color.Parse("#E6202020"));
+            darkTheme["SidebarBorderBrush"] = new SolidColorBrush(Color.Parse("#33FFFFFF"));
 
             // 右键菜单色调层（PART_Backdrop 的兜底底色）：玻璃层不可用时
             // （无头平台、宿主快照失败）用这层较高不透明度的深色保证可读性。
@@ -177,8 +178,8 @@ public class ThemeManager
             lightTheme["ShadowBrush"] = new SolidColorBrush(Color.Parse("#33000000"));
             lightTheme["GlowBrush"] = new SolidColorBrush(Color.Parse("#22000000"));
 
-            lightTheme["NavigationRailBackgroundBrush"] = new SolidColorBrush(Color.Parse("#E8FFFFFF"));
-            lightTheme["NavigationRailBorderBrush"] = new SolidColorBrush(Color.Parse("#D4D4D4"));
+            lightTheme["SidebarBackgroundBrush"] = new SolidColorBrush(Color.Parse("#F2F6F6F5"));
+            lightTheme["SidebarBorderBrush"] = new SolidColorBrush(Color.Parse("#1A000000"));
 
             lightTheme["MenuBackdropBrush"] = new SolidColorBrush(Color.Parse("#F0FAFAFA"));
             // 浅色主题同款：60% 白色遮罩 + 更淡的顶部反光、深色边缘高光。
@@ -314,52 +315,13 @@ public class ThemeManager
             _application.Resources["AccentSubtleHoverBrush"] = new SolidColorBrush(subtleHover);
             _application.Resources["AccentSubtlePressedBrush"] = new SolidColorBrush(subtlePressed);
 
-            // ==== 竖直导航栏（激发象限）主题令牌 ====
-            // 选中底色：10%–14% 强调色；悬停略高；指示条为纵向渐变，两端收窄形成发光感。
-            var railSelectedAlpha = isDark ? 0.14 : 0.10;
-            var railSelectedHoverAlpha = isDark ? 0.20 : 0.16;
-            var indicatorTail = accent.WithAlpha(isDark ? 0.35 : 0.45);
-            _application.Resources["NavigationRailSelectedBrush"] =
-                new SolidColorBrush(accent.WithAlpha(railSelectedAlpha));
-            _application.Resources["NavigationRailSelectedHoverBrush"] =
-                new SolidColorBrush(accent.WithAlpha(railSelectedHoverAlpha));
-            // 指示条：从左向右渐变（实心收尾向右淡出），不再是两端收窄的中心式渐变。
-            _application.Resources["NavigationRailIndicatorBrush"] = new LinearGradientBrush
-            {
-                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
-                EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative),
-                GradientStops =
-                {
-                    new GradientStop(accent, 0),
-                    new GradientStop(indicatorTail, 1)
-                }
-            };
-            // 选中微光：同样从左向右扫过，替换原先的径向（中心亮）光晕。
-            _application.Resources["NavigationRailGlowBrush"] = new LinearGradientBrush
-            {
-                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
-                EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative),
-                GradientStops =
-                {
-                    new GradientStop(accent.WithAlpha(isDark ? 0.30 : 0.20), 0),
-                    new GradientStop(accent.WithAlpha(isDark ? 0.12 : 0.08), 0.55),
-                    new GradientStop(accent.WithAlpha(0), 1)
-                }
-            };
-            // 导航栏背景顶部的环境光：自上而下渐变，与按钮的横向渐变互不影响。
-            _application.Resources["NavigationRailAmbientBrush"] = new LinearGradientBrush
-            {
-                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
-                EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
-                GradientStops =
-                {
-                    new GradientStop(accent.WithAlpha(isDark ? 0.34 : 0.22), 0),
-                    new GradientStop(accent.WithAlpha(isDark ? 0.16 : 0.10), 0.4),
-                    new GradientStop(accent.WithAlpha(isDark ? 0.05 : 0.03), 0.75),
-                    new GradientStop(accent.WithAlpha(0), 1)
-                }
-            };
-            _application.Resources["NavigationRailStatusDotBrush"] = new SolidColorBrush(accent);
+            // ==== 贴边侧边栏主题令牌 ====
+            // 侧边栏是把底栏竖过来：悬停/选中条都用与底栏项相同的强调色语言，
+            // 因此只需要“选中底”与“状态点”两个强调色衍生令牌。
+            var sidebarSelectedAlpha = isDark ? 0.14 : 0.10;
+            _application.Resources["SidebarItemSelectedBrush"] =
+                new SolidColorBrush(accent.WithAlpha(sidebarSelectedAlpha));
+            _application.Resources["SidebarStatusDotBrush"] = new SolidColorBrush(accent);
 
             // 向后兼容：保留旧名称，等价映射到新画笔
             _application.Resources["AccentBackgroundOverBrush"] = new SolidColorBrush(pressed);

@@ -1,0 +1,39 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:OnePointUI.Avalonia.Styling.Controls.OnePointControls">
+    <Design.PreviewWith>
+        <Border Padding="20" Background="{DynamicResource BackgroundBrush}">
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <controls:ToolIcon Kind="Crosshair" />
+                <controls:ToolIcon Kind="Skybox" />
+                <controls:ToolIcon Kind="JavaTexture" />
+                <controls:ToolIcon Kind="McpManager" Stroke="{DynamicResource AccentBackgroundBrush}" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="controls|ToolIcon">
+        <Setter Property="Stroke" Value="{DynamicResource PrimaryForegroundBrush}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Viewbox Stretch="Uniform">
+                    <Panel Width="24" Height="24">
+                        <Path Name="PART_Stroke"
+                              Width="24"
+                              Height="24"
+                              Stretch="None"
+                              Stroke="{TemplateBinding Stroke}"
+                              StrokeThickness="{TemplateBinding StrokeThickness}"
+                              StrokeLineCap="Round"
+                              StrokeJoin="Round" />
+                        <Path Name="PART_Fill"
+                              Width="24"
+                              Height="24"
+                              Stretch="None"
+                              Fill="{TemplateBinding Stroke}" />
+                    </Panel>
+                </Viewbox>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

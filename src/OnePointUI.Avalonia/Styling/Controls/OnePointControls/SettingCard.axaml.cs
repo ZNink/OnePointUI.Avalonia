@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
+using OnePointUI.Avalonia.Styling.Icons;
 
 namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls;
 
@@ -33,6 +34,26 @@ public class SettingCard : ContentControl
 
     public static readonly StyledProperty<IImage?> ImageIconProperty =
         AvaloniaProperty.Register<SettingCard, IImage?>(nameof(ImageIcon));
+
+    /// <summary>
+    /// 线稿图标（<see cref="ToolIconKind" />）。设置后压过 <see cref="Glyph" /> 与 <see cref="ImageIcon" />，
+    /// 三种图标互斥，模板只看 <see cref="ShowGeometryIcon" /> / <see cref="ShowFontIcon" /> / <see cref="ShowImageIcon" />。
+    /// </summary>
+    public static readonly StyledProperty<ToolIconKind?> IconKindProperty =
+        AvaloniaProperty.Register<SettingCard, ToolIconKind?>(nameof(IconKind));
+
+    /// <summary>图标区当前渲染字形图标。</summary>
+    public static readonly StyledProperty<bool> ShowFontIconProperty =
+        AvaloniaProperty.Register<SettingCard, bool>(nameof(ShowFontIcon), true);
+
+    /// <summary>图标区当前渲染位图图标。</summary>
+    public static readonly StyledProperty<bool> ShowImageIconProperty =
+        AvaloniaProperty.Register<SettingCard, bool>(nameof(ShowImageIcon));
+
+    /// <summary>图标区当前渲染线稿图标。</summary>
+    public static readonly StyledProperty<bool> ShowGeometryIconProperty =
+        AvaloniaProperty.Register<SettingCard, bool>(nameof(ShowGeometryIcon));
+
     public event EventHandler<RoutedEventArgs>? Click;
 
     public string Glyph
@@ -87,6 +108,30 @@ public class SettingCard : ContentControl
         set => SetValue(ImageIconProperty, value);
     }
 
+    public ToolIconKind? IconKind
+    {
+        get => GetValue(IconKindProperty);
+        set => SetValue(IconKindProperty, value);
+    }
+
+    public bool ShowFontIcon
+    {
+        get => GetValue(ShowFontIconProperty);
+        set => SetValue(ShowFontIconProperty, value);
+    }
+
+    public bool ShowImageIcon
+    {
+        get => GetValue(ShowImageIconProperty);
+        set => SetValue(ShowImageIconProperty, value);
+    }
+
+    public bool ShowGeometryIcon
+    {
+        get => GetValue(ShowGeometryIconProperty);
+        set => SetValue(ShowGeometryIconProperty, value);
+    }
+
     private Border? _rootBorder;
     private bool _isPointerPressed;
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -115,6 +160,26 @@ public class SettingCard : ContentControl
         base.OnPropertyChanged(change);
 
         if (change.Property == IsFontIconProperty) SetValue(IsNotFontIconProperty, !(bool)change.NewValue!);
+
+        if (change.Property == IsFontIconProperty
+            || change.Property == IsNotFontIconProperty
+            || change.Property == IconKindProperty
+            || change.Property == ImageIconProperty)
+        {
+            SyncIconBranches();
+        }
+    }
+
+    /// <summary>
+    /// 三种图标互斥、线稿优先：改任一来源后立即收敛到恰好一个可见分支，
+    /// 模板不再自己做组合判断。
+    /// </summary>
+    private void SyncIconBranches()
+    {
+        var geometry = IconKind is not null;
+        SetValue(ShowGeometryIconProperty, geometry);
+        SetValue(ShowFontIconProperty, !geometry && IsFontIcon);
+        SetValue(ShowImageIconProperty, !geometry && IsNotFontIcon);
     }
     private void RootBorder_PointerPressed(object? sender, PointerPressedEventArgs e)
     {

@@ -37,14 +37,21 @@
                                     <controls:FontIcon Glyph="{TemplateBinding Glyph}"
                                                        FontSize="24"
                                                        Margin="10,9,0,0"
-                                                       IsVisible="{TemplateBinding IsFontIcon}"
+                                                       IsVisible="{TemplateBinding ShowFontIcon}"
+                                                       HorizontalAlignment="Left"
+                                                       VerticalAlignment="Top" />
+
+                                    <controls:ToolIcon Kind="{TemplateBinding IconKind}"
+                                                       Size="24"
+                                                       Margin="10,9,0,0"
+                                                       IsVisible="{TemplateBinding ShowGeometryIcon}"
                                                        HorizontalAlignment="Left"
                                                        VerticalAlignment="Top" />
                                     
                                     <Border Width="32" Height="32"
                                             CornerRadius="4"
                                             Margin="5,5,0,0"
-                                            IsVisible="{TemplateBinding IsNotFontIcon}"
+                                            IsVisible="{TemplateBinding ShowImageIcon}"
                                             HorizontalAlignment="Left"
                                             VerticalAlignment="Top"
                                             ClipToBounds="True">
@@ -148,14 +155,22 @@
                                                    Glyph="{TemplateBinding Glyph}"
                                                    FontSize="24"
                                                    Margin="10,9,0,0"
-                                                   IsVisible="{TemplateBinding IsFontIcon}"
+                                                   IsVisible="{TemplateBinding ShowFontIcon}"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Top" />
+
+                                <controls:ToolIcon x:Name="PART_ToolIcon"
+                                                   Kind="{TemplateBinding IconKind}"
+                                                   Size="24"
+                                                   Margin="10,9,0,0"
+                                                   IsVisible="{TemplateBinding ShowGeometryIcon}"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Top" />
 
                                 <Border Width="32" Height="32"
                                         CornerRadius="4"
                                         Margin="5,5,0,0"
-                                        IsVisible="{TemplateBinding IsNotFontIcon}"
+                                        IsVisible="{TemplateBinding ShowImageIcon}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Top"
                                         ClipToBounds="True">
@@ -236,6 +251,9 @@
         <Style Selector="^.selected /template/ controls|FontIcon#PART_Glyph">
             <Setter Property="Foreground" Value="{DynamicResource AccentBackgroundBrush}" />
         </Style>
+        <Style Selector="^.selected /template/ controls|ToolIcon#PART_ToolIcon">
+            <Setter Property="Stroke" Value="{DynamicResource AccentBackgroundBrush}" />
+        </Style>
     </Style>
 
     <Style Selector="controls|SettingCard.Item">
@@ -261,14 +279,21 @@
                                     <controls:FontIcon Glyph="{TemplateBinding Glyph}"
                                                        FontSize="28"
                                                        Margin="8,0,0,0"
-                                                       IsVisible="{TemplateBinding IsFontIcon}"
+                                                       IsVisible="{TemplateBinding ShowFontIcon}"
+                                                       HorizontalAlignment="Left"
+                                                       VerticalAlignment="Center" />
+
+                                    <controls:ToolIcon Kind="{TemplateBinding IconKind}"
+                                                       Size="28"
+                                                       Margin="8,0,0,0"
+                                                       IsVisible="{TemplateBinding ShowGeometryIcon}"
                                                        HorizontalAlignment="Left"
                                                        VerticalAlignment="Center" />
 
                                     <Image Width="32" Height="32"
                                            Stretch="UniformToFill"
                                            Margin="6,0,0,0"
-                                           IsVisible="{TemplateBinding IsNotFontIcon}"
+                                           IsVisible="{TemplateBinding ShowImageIcon}"
                                            Source="{TemplateBinding ImageIcon}"
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center" />
@@ -380,7 +405,14 @@
                                                            FontSize="20"
                                                            Margin="0,0,8,0"
                                                            VerticalAlignment="Center"
-                                                           IsVisible="{TemplateBinding IsFontIcon}"
+                                                           IsVisible="{TemplateBinding ShowFontIcon}"
+                                                           HorizontalAlignment="Left" />
+
+                                        <controls:ToolIcon Kind="{TemplateBinding IconKind}"
+                                                           Size="20"
+                                                           Margin="0,0,8,0"
+                                                           VerticalAlignment="Center"
+                                                           IsVisible="{TemplateBinding ShowGeometryIcon}"
                                                            HorizontalAlignment="Left" />
 
                                         <StackPanel Grid.Column="1"

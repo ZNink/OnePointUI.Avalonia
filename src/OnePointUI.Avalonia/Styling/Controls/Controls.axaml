@@ -61,6 +61,7 @@
 
     <StyleInclude Source="OnePointControls/LineTextBlock.axaml" />
     <StyleInclude Source="OnePointControls/FontIcon.axaml" />
+    <StyleInclude Source="OnePointControls/ToolIcon.axaml" />
     <StyleInclude Source="OnePointControls/SegmentedButton.axaml" />
     <StyleInclude Source="OnePointControls/ButtonCluster.axaml" />
     <StyleInclude Source="OnePointControls/SettingCard.axaml" />
@@ -83,10 +84,8 @@
     <StyleInclude Source="OnePointControls/Items/SteamCard.axaml" />
     <StyleInclude Source="OnePointControls/Navigation/CornerSelectBar/CornerSelectBar.axaml" />
     <StyleInclude Source="OnePointControls/Navigation/CornerSelectBar/CornerSelectBarItem.axaml" />
-    <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRail.axaml" />
-    <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRailItem.axaml" />
-    <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRailGroup.axaml" />
-    <StyleInclude Source="OnePointControls/Navigation/NavigationRail/OnePointNavigationRailSeparator.axaml" />
+    <StyleInclude Source="OnePointControls/Navigation/Sidebar/OnePointSidebar.axaml" />
+    <StyleInclude Source="OnePointControls/Navigation/Sidebar/OnePointSidebarItem.axaml" />
     <StyleInclude Source="OnePointControls/Navigation/TabView/TabView.axaml" />
     <StyleInclude Source="OnePointControls/Navigation/TabView/TabViewItem.axaml" />
 </Styles>
