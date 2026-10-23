@@ -1,0 +1,163 @@
+// =====================================================================
+// noise-marquee.sksl —— 噪点跑马灯（Noise Marquee）
+//
+// 在绑定矩形内渲染一条匀速流动的细粉尘带：
+//   · 密度沿流动轴 smoothstep 渐变：低密度端 0% → 高密度端 maxNoiseAmount
+//   · 亮度呈幂律尾部：绝大多数颗粒若隐若现，少数清晰锐利
+//   · 共动坐标的「无限网格」：格子索引无界、每格属性由格子哈希决定，
+//     所以整条粒子流没有循环周期 —— 无接缝、无洗牌、无空白帧
+//   · 圆角 SDF 遮罩 + 边缘淡出：颗粒在边界处自然消隐，不会被硬切
+//
+// uniform 由 SkiaShaderRenderer 逐帧注入（见 SkiaEffect.ToShaderWithUniforms）。
+// 坐标与 iResolution 同域（DIP），因此 speed 的单位是 DIP/s。
+// =====================================================================
+
+uniform float iFlowTime;      // 未乘 AnimationSpeedScale 的原始秒，保证 speed 是真实 DIP/s
+uniform float iNoiseAmount;   // 高密度端峰值不透明度（默认 0.03）
+uniform vec2 iNoiseDir;       // 流动方向单位向量（默认 (-1, 0)，即向左）
+uniform float iNoiseSpeed;    // 恒定流速 DIP/s（降级/静止时为 0）
+uniform float iNoiseGrain;    // 颗粒基准半径 DIP
+uniform float iNoiseSoft;     // 边缘柔和度 0=锐利 1=羽化
+uniform float iNoiseRadius;   // 目标区域圆角半径 DIP
+uniform vec3 iNoiseColor;     // 深色主题下的颗粒色（亮尘，线性 0..1）
+uniform vec3 iNoiseColorAlt;  // 浅色主题下的颗粒色（暗砂，线性 0..1）
+uniform float iDarkMix;       // 0=浅色主题 1=深色主题（宿主做 ~220ms 平滑过渡）
+uniform float iNoiseSeed;     // 每实例随机种子，避免多个 Hero 完全同相
+
+// amount 是「峰值不透明度」，这里再乘一个固定增益，让 3% 落到肉眼刚好的
+// 存在感上（约 0.2 的峰值）——0.03 直接当 alpha 会低到几乎看不见。
+const float NM_GAIN = 7.0;
+
+// ---------------------------------------------------------------------
+// 工具函数
+// ---------------------------------------------------------------------
+
+// 端点可互换的 smoothstep：SkSL 内置 smoothstep 要求 edge0 < edge1，
+// 这里自己写一份，避免反序调用时行为未定义。
+float nm_sstep(float a, float b, float x)
+{
+    float t = clamp((x - a) / (b - a), 0.0, 1.0);
+    return t * t * (3.0 - 2.0 * t);
+}
+
+// Hoskins 无 sin 哈希：大坐标下不会像 sin(dot()) 那样精度塌陷。
+vec3 nm_hash3(vec2 p)
+{
+    vec3 p3 = fract(vec3(p.x, p.y, p.x) * vec3(0.1031, 0.1030, 0.0973));
+    p3 += dot(p3, p3.yxz + 33.33);
+    return fract((p3.xxy + p3.yzz) * p3.zyx);
+}
+
+// 圆角矩形有符号距离：p 相对矩形中心，b 是半尺寸，r 是圆角半径。
+float nm_sdRoundRect(vec2 p, vec2 b, float r)
+{
+    vec2 q = abs(p) - b + vec2(r);
+    return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+}
+
+// 单层颗粒场。
+//   fq     共动坐标（沿流向已减去 speed*t）
+//   cell   格子尺寸（DIP）
+//   grain  基准半径
+//   sizeMul 该层的尺寸倍率
+//   spawn  出生阈值（1.0 = 每格都有，0.6 = 只有 40% 的格子有）
+//   seed   层种子
+float nm_layer(vec2 fq, vec2 cell, float grain, float sizeMul, float spawn, float seed, float soft)
+{
+    vec2 grid = fq / cell;
+    vec2 base = floor(grid);
+    float acc = 0.0;
+
+    // 3x3 邻域：粒子最大影响半径远小于 1.5 格，所以只需看相邻 9 格。
+    // 这一步同时保证了「粒子移出邻域窗口时 alpha 早已为 0」——不留断口。
+    for (int i = -1; i <= 1; i++)
+    {
+        for (int j = -1; j <= 1; j++)
+        {
+            vec2 id = base + vec2(float(i), float(j));
+            vec3 h = nm_hash3(id + vec2(seed, seed * 1.37));
+
+            // 出生开关用两路哈希的金比例混合，避免和偏移/亮度产生可见关联。
+            float gate = fract(dot(h.xy, vec2(0.6180339887, 0.4142135624)));
+            if (gate > spawn) continue;
+
+            // 粒子中心（共动坐标）+ 格内抖动 -> 打散网格感
+            vec2 center = (id + vec2(h.y, h.z)) * cell;
+            vec2 delta = fq - center;
+
+            // 亮度键 -> 幂律尾部：多数颗粒极淡，少数清晰
+            float key = h.x;
+            float bright = key * key * key;
+
+            // 亮的略大略锐，暗的更小更糊（但都极小）
+            float r = grain * sizeMul * (0.90 + 0.30 * key);
+            float k = mix(2.6, 1.2, soft) * mix(1.20, 0.90, key);
+
+            // 把像素足迹并进核宽（+0.32 ≈ 一个像素的面积）：颗粒半径接近 1px 时
+            // 峰值得以稳定在 0.6~1.0，不会因为落在像素缝里而忽明忽暗。
+            float core = max(r * r + 0.32, 1e-4);
+
+            float d2 = dot(delta, delta);
+            if (d2 > core * 9.0) continue;   // 3 倍半径外 exp() 已可忽略
+
+            acc += exp(-k * d2 / core) * bright;
+        }
+    }
+
+    return acc;
+}
+
+// ---------------------------------------------------------------------
+// 主函数
+// ---------------------------------------------------------------------
+vec4 main(vec2 fragCoord)
+{
+    vec2 size = iResolution.xy;
+    if (size.x < 2.0 || size.y < 2.0) return vec4(0.0);
+    if (iNoiseAmount <= 0.0) return vec4(0.0);
+
+    // 流动轴与密度轴：顺着流向走是低密度 -> 高密度
+    vec2 flowDir = iNoiseDir;
+    float fl = length(flowDir);
+    flowDir = fl > 1e-4 ? flowDir / fl : vec2(-1.0, 0.0);
+    vec2 sideDir = vec2(-flowDir.y, flowDir.x);
+    vec2 densDir = -flowDir;
+
+    vec2 center = size * 0.5;
+    vec2 rel = fragCoord - center;
+
+    // ---- 密度梯度：垂直于密度轴的每一层都是同一个值，连续可导 ----
+    float halfExtent = 0.5 * (abs(densDir.x) * size.x + abs(densDir.y) * size.y);
+    float grad = clamp(0.5 + 0.5 * dot(rel, densDir) / max(halfExtent, 1e-3), 0.0, 1.0);
+    float dens = grad * grad * (3.0 - 2.0 * grad);
+
+    // ---- 圆角遮罩：边缘一条淡出带，颗粒不会被圆角硬切 ----
+    float radius = clamp(iNoiseRadius, 0.0, min(size.x, size.y) * 0.5);
+    float band = min(10.0, min(size.x, size.y) * 0.18);
+    float sd = nm_sdRoundRect(rel, size * 0.5, radius);
+    float mask = nm_sstep(0.0, -band, sd);
+    if (mask <= 0.0 || dens <= 0.0) return vec4(0.0);
+
+    // ---- 共动坐标：颗粒在屏幕空间沿 flowDir 以恒定 speed 漂移 ----
+    float alongFlow = dot(fragCoord, flowDir) - iNoiseSpeed * iFlowTime;
+    float acrossFlow = dot(fragCoord, sideDir);
+    vec2 fq = vec2(alongFlow, acrossFlow);
+
+    float grain = max(iNoiseGrain, 0.25);
+    float soft = clamp(iNoiseSoft, 0.0, 1.0);
+
+    // 两层不同尺度：细密一层定基调，稀疏一层补纵深；两者同速，整片只有一个流向。
+    float acc = nm_layer(fq, vec2(grain * 11.0, grain * 9.0), grain, 1.0, 1.0, iNoiseSeed, soft);
+    acc += nm_layer(fq, vec2(grain * 23.0, grain * 17.0), grain, 0.80, 0.50, iNoiseSeed + 19.0, soft);
+
+    float alpha = clamp(acc, 0.0, 1.0) * dens * mask * iNoiseAmount * NM_GAIN * iAlpha;
+    alpha = clamp(alpha, 0.0, 0.92);
+    if (alpha <= 0.0005) return vec4(0.0);
+
+    // 深浅两套颗粒色按 iDarkMix 插值：主题切换时颜色本身就在平滑过渡，
+    // 不会出现「同一瞬间亮度换了颜色」的跳变。
+    vec3 col = clamp(mix(iNoiseColorAlt, iNoiseColor, clamp(iDarkMix, 0.0, 1.0)), 0.0, 1.0);
+
+    // runtime shader 的输出按预乘 alpha 解释，必须返回 (color * a, a)。
+    return vec4(col * alpha, alpha);
+}

@@ -4,6 +4,7 @@ using Avalonia.Automation.Peers;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 
 namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation.Sidebar;
 
@@ -34,7 +35,7 @@ public sealed class OnePointSidebarSelectionChangedEventArgs : EventArgs
 /// 导航项列表与底部状态区。
 /// </summary>
 /// <remarks>
-/// <para>固定宽度、单一形态：没有展开/折叠、没有宽度手柄，因此也不存在随模式变化的
+/// <para>固定宽度、单一形态（只有图标栏，没有展开态）：没有宽度手柄，也不存在随模式变化的
 /// 紧凑布局。宿主只需要声明当前路由（<see cref="SelectedKey" />）并注入品牌与底部内容。</para>
 /// <para>外壳默认 <see cref="SidebarCornerRadius" /> 与窗口边框圆角同值，四角一致；
 /// 贴在窗口左/上/下边缘时左侧两个圆角正好沿窗口圆角走，右侧两个圆角落在窗口内部。</para>
@@ -50,9 +51,6 @@ public class OnePointSidebar : ItemsControl
     public static readonly StyledProperty<string> BrandTitleProperty =
         AvaloniaProperty.Register<OnePointSidebar, string>(nameof(BrandTitle), "OnePointUI");
 
-    public static readonly StyledProperty<string> BrandDescriptionProperty =
-        AvaloniaProperty.Register<OnePointSidebar, string>(nameof(BrandDescription), string.Empty);
-
     /// <summary>底部状态区内容（账号、命令项等）。</summary>
     public static readonly StyledProperty<object?> FooterProperty =
         AvaloniaProperty.Register<OnePointSidebar, object?>(nameof(Footer));
@@ -66,6 +64,30 @@ public class OnePointSidebar : ItemsControl
         AvaloniaProperty.Register<OnePointSidebar, CornerRadius>(
             nameof(SidebarCornerRadius),
             new CornerRadius(8));
+
+    /// <summary>
+    /// 外壳材质层：宿主放实时材质用（例如侧边栏专用的模糊泰森多边形着色器）。
+    /// </summary>
+    /// <remarks>
+    /// 该内容铺满整个侧边栏，位于 <see cref="MaskBrush" /> 遮罩层之下、导航内容之下，
+    /// 且不参与命中测试（它只是背景材质，不该吃掉按钮的点击）。
+    /// </remarks>
+    public static readonly StyledProperty<object?> MaterialProperty =
+        AvaloniaProperty.Register<OnePointSidebar, object?>(nameof(Material));
+
+    /// <summary>
+    /// 亮度遮罩：画在材质层之上的一层半透明刷子，用来压暗（深色）/提亮（浅色）侧边栏，
+    /// 让 72px 图标栏在任意背景上都能读出对比度。
+    /// </summary>
+    /// <remarks>
+    /// 宿主按背景本体决定给不给：无遮罩亚克力时置 <c>null</c>（整层不画）。
+    /// 之所以做成属性、而不是让宿主往模板部件的样式里塞 <c>DynamicResource</c>，
+    /// 是因为模板部件的样式在模板实例化时就求值，之后往 <c>Application.Resources</c>
+    /// 里补同一个键<b>不会</b>再回流到已经应用过的 setter 上——曾经因此出现过
+    /// “遮罩看起来完全失效”的问题。
+    /// </remarks>
+    public static readonly StyledProperty<IBrush?> MaskBrushProperty =
+        AvaloniaProperty.Register<OnePointSidebar, IBrush?>(nameof(MaskBrush));
 
     public OnePointSidebar()
     {
@@ -94,12 +116,6 @@ public class OnePointSidebar : ItemsControl
         set => SetValue(BrandTitleProperty, value);
     }
 
-    public string BrandDescription
-    {
-        get => GetValue(BrandDescriptionProperty);
-        set => SetValue(BrandDescriptionProperty, value);
-    }
-
     public object? Footer
     {
         get => GetValue(FooterProperty);
@@ -112,6 +128,18 @@ public class OnePointSidebar : ItemsControl
     {
         get => GetValue(SidebarCornerRadiusProperty);
         set => SetValue(SidebarCornerRadiusProperty, value);
+    }
+
+    public object? Material
+    {
+        get => GetValue(MaterialProperty);
+        set => SetValue(MaterialProperty, value);
+    }
+
+    public IBrush? MaskBrush
+    {
+        get => GetValue(MaskBrushProperty);
+        set => SetValue(MaskBrushProperty, value);
     }
 
     /// <summary>按导航键选中，用于宿主路由变化时的程序化同步。</summary>

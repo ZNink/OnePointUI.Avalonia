@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" stroke="#FFFFFF" stroke-width="12">
+  <!-- Pulsar 品牌标记：星球本体 + 前后半星环 + 底部装饰横线。
+       这份 SVG 是设计源；OnePointUI 的 PulsarBrandMark 用同样的路径数据描边绘制，
+       这样在任意尺寸下都清晰，并能随主题前景色换色。 -->
+  <!-- 后半球星环：拆成两段，只保留星球圆外的可见部分 -->
+  <g transform="rotate(-30 100 100)" stroke-linecap="butt">
+    <path d="M 25 100 A 75 25 0 0 0 60.31 121.21" />
+    <path d="M 139.69 121.21 A 75 25 0 0 0 175 100" />
+  </g>
+  <!-- 星球本体 -->
+  <circle cx="100" cy="100" r="45" stroke-width="8" />
+  <!-- 前半球星环 -->
+  <path d="M 25 100 A 75 25 0 0 1 175 100"
+        transform="rotate(-30 100 100)"
+        stroke-linecap="round" />
+  <!-- 底部装饰横线 -->
+  <rect x="50" y="150" width="100" height="12" rx="6" fill="#FFFFFF" stroke="none" />
+</svg>

@@ -3,8 +3,8 @@
         xmlns:onePointControls="clr-namespace:OnePointUI.Avalonia.Styling.Controls.OnePointControls"
         xmlns:sidebar="using:OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation.Sidebar">
     <Design.PreviewWith>
-        <Border Padding="20" Width="248" Background="{DynamicResource SidebarBackgroundBrush}">
-            <StackPanel Spacing="2">
+        <Border Padding="20" Width="72" Background="{DynamicResource SidebarBackgroundBrush}">
+            <StackPanel Spacing="6">
                 <sidebar:OnePointSidebarItem Glyph="&#xE80F;" ItemText="主页" NavigationKey="Home" IsSelected="True" />
                 <sidebar:OnePointSidebarItem Glyph="&#xE74C;" ItemText="扩展" NavigationKey="Extensions" BadgeText="3" />
                 <sidebar:OnePointSidebarItem Glyph="&#xE90F;" ItemText="工具" NavigationKey="Tools" />
@@ -15,16 +15,17 @@
     </Design.PreviewWith>
 
     <!--
-        侧边栏按钮 = 底部停靠项竖过来：
-        · 几何与底栏一致：44px 高、8px 圆角、图标 16 + 文字、左右留白
-        · 悬停 = 弱底（与底栏同一个 PrimaryBackgroundOverBrush）
-        · 选中 = 强调色文字 + 强调色底 + 贴在右侧的 4px 强调条
-          （底栏的选中条在底边、22×4、两端 5px 圆角；竖过来就是右边、4×22，圆角跟着转）
-        · 按下 = 整项轻微降透明度；键盘焦点 = 2px 强调色内描边
-        · 单一形态：文本始终显示，没有紧凑/折叠态
+        侧边栏按钮 = 底部停靠栏按钮（同一份几何与状态语言）：
+        · 72×44，图标 16 在上、文字 10 在下，全部居中；图标与文字在任何状态下都不位移
+        · 悬停 = 弱底（与底栏同一个 PrimaryBackgroundOverBrush），没有位移/缩放
+        · 选中 = 强调色文字 + 图标着色 + 项目下方那条 22×4、两端 5px 圆角的强调条
+        · 键盘焦点 = 2px 强调色内描边
+        · 单一形态：只有这一种（图标栏），没有展开态
     -->
     <Style Selector="sidebar|OnePointSidebarItem">
+        <Setter Property="Width" Value="72" />
         <Setter Property="Height" Value="44" />
+        <Setter Property="MinWidth" Value="44" />
         <Setter Property="MinHeight" Value="44" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="0" />
@@ -42,12 +43,6 @@
                 <Panel Name="PART_Root"
                        Background="Transparent"
                        ClipToBounds="False">
-                    <Panel.Transitions>
-                        <Transitions>
-                            <DoubleTransition Property="Opacity" Duration="0:0:0.1" Easing="QuinticEaseOut" />
-                        </Transitions>
-                    </Panel.Transitions>
-
                     <Border Name="PART_Hover"
                             Margin="2,0"
                             CornerRadius="{TemplateBinding CornerRadius}"
@@ -61,74 +56,18 @@
                         </Border.Transitions>
                     </Border>
 
-                    <Border Name="PART_Selected"
-                            CornerRadius="{TemplateBinding CornerRadius}"
-                            Background="{DynamicResource SidebarItemSelectedBrush}"
-                            Opacity="0"
-                            IsHitTestVisible="False">
-                        <Border.Transitions>
-                            <Transitions>
-                                <DoubleTransition Property="Opacity" Duration="0:0:0.16" Easing="ExponentialEaseOut" />
-                            </Transitions>
-                        </Border.Transitions>
-                    </Border>
-
                     <!--
-                        选中标记：底栏那条 22×4、两端 5px 圆角的强调条竖过来——
-                        变成贴在右侧的 4×22，圆角跟着转成 0,5,5,0，向右探出 3px。
-                        生长走 RenderTransform：几何恒定，动画期间不会逐帧重排整棵可视树。
+                        内容是一个固定的竖排：图标在上、文字在下。任何状态都不改 Margin、
+                        不改 RenderTransform，所以图标与文字永远不会动。
                     -->
-                    <Border Name="PART_Indicator"
-                            Width="4"
-                            Height="22"
-                            Margin="0,0,-3,0"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            CornerRadius="0,5,5,0"
-                            Background="{DynamicResource AccentBackgroundBrush}"
-                            Opacity="0"
-                            RenderTransform="scale(1,0)"
-                            RenderTransformOrigin="0.5,0.5"
-                            IsHitTestVisible="False">
-                        <Border.Transitions>
-                            <Transitions>
-                                <TransformOperationsTransition Property="RenderTransform"
-                                                               Duration="0:0:0.42"
-                                                               Easing="ExponentialEaseOut" />
-                                <DoubleTransition Property="Opacity"
-                                                  Duration="0:0:0.38"
-                                                  Easing="ExponentialEaseOut" />
-                            </Transitions>
-                        </Border.Transitions>
-                    </Border>
-
-                    <Border Name="PART_Focus"
-                            Margin="1"
-                            CornerRadius="{TemplateBinding CornerRadius}"
-                            BorderBrush="{DynamicResource AccentBackgroundBrush}"
-                            BorderThickness="2"
-                            Opacity="0"
-                            IsHitTestVisible="False" />
-
-                    <Grid Name="PART_Content"
-                          Margin="12,0"
-                          ColumnDefinitions="Auto,*,Auto"
-                          ColumnSpacing="10">
+                    <StackPanel Name="PART_Content"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="1">
                         <Panel Name="PART_IconHost"
-                               Grid.Column="0"
                                Width="20"
                                Height="20"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Center"
-                               RenderTransformOrigin="0.5,0.5">
-                            <Panel.Transitions>
-                                <Transitions>
-                                    <!-- 悬停位移走变换，避免逐帧触发布局 -->
-                                    <TransformOperationsTransition Property="RenderTransform"
-                                                                   Duration="0:0:0.1"
-                                                                   Easing="QuinticEaseOut" />
-                                </Transitions>
-                            </Panel.Transitions>
+                               HorizontalAlignment="Center">
                             <onePointControls:FontIcon Name="PART_Icon"
                                                        Glyph="{TemplateBinding Glyph}"
                                                        Foreground="{TemplateBinding Foreground}"
@@ -155,32 +94,20 @@
                                      Fill="{DynamicResource SidebarStatusDotBrush}"
                                      Stroke="{DynamicResource SidebarBackgroundBrush}"
                                      StrokeThickness="2" />
-                        </Panel>
-
-                        <TextBlock Name="PART_Text"
-                                   Grid.Column="1"
-                                   Text="{TemplateBinding ItemText}"
-                                   Foreground="{TemplateBinding Foreground}"
-                                   FontSize="12"
-                                   FontWeight="SemiBold"
-                                   TextTrimming="CharacterEllipsis"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center" />
-
-                        <Panel Name="PART_BadgeHost"
-                               Grid.Column="2"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Right">
+                            <!-- 数字徽标：图标右上角的小药丸，不参与排版 -->
                             <Border Name="PART_Badge"
-                                    MinWidth="18"
-                                    Height="18"
-                                    Padding="5,0"
-                                    CornerRadius="9"
+                                    MinWidth="14"
+                                    Height="14"
+                                    Padding="4,0"
+                                    Margin="0,-4,-6,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    CornerRadius="7"
                                     Background="{DynamicResource AccentBackgroundBrush}"
                                     IsVisible="{TemplateBinding HasBadge}">
                                 <TextBlock Text="{TemplateBinding BadgeText}"
                                            Foreground="{DynamicResource AccentForegroundBrush}"
-                                           FontSize="10"
+                                           FontSize="9"
                                            FontWeight="SemiBold"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center" />
@@ -188,10 +115,59 @@
                             <Ellipse Name="PART_BadgeDot"
                                      Width="8"
                                      Height="8"
+                                     Margin="0,-2,-2,0"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Top"
                                      IsVisible="{TemplateBinding ShowBadgeDot}"
                                      Fill="{DynamicResource SystemFillColorCriticalBrush}" />
                         </Panel>
-                    </Grid>
+
+                        <TextBlock Name="PART_Text"
+                                   Text="{TemplateBinding ItemText}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   MaxWidth="64"
+                                   TextAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <Border Name="PART_Focus"
+                            Margin="1"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            BorderBrush="{DynamicResource AccentBackgroundBrush}"
+                            BorderThickness="2"
+                            Opacity="0"
+                            IsHitTestVisible="False" />
+
+                    <!--
+                        选中标记：与底栏完全一致——22×4、两端 5px 圆角、贴在项目下缘并向下探出 3px。
+                        生长只用 RenderTransform，几何恒定，动画期间不触发重排。
+                    -->
+                    <Border Name="PART_Indicator"
+                            Width="22"
+                            Height="4"
+                            Margin="0,0,0,-3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            CornerRadius="5,5,0,0"
+                            Background="{DynamicResource AccentBackgroundBrush}"
+                            Opacity="0"
+                            RenderTransform="scale(0,1)"
+                            RenderTransformOrigin="0.5,0.5"
+                            IsHitTestVisible="False">
+                        <Border.Transitions>
+                            <Transitions>
+                                <TransformOperationsTransition Property="RenderTransform"
+                                                               Duration="0:0:0.42"
+                                                               Easing="ExponentialEaseOut" />
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.38"
+                                                  Easing="ExponentialEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
                 </Panel>
             </ControlTemplate>
         </Setter>
@@ -204,12 +180,8 @@
             <Setter Property="Opacity" Value="0.72" />
         </Style>
 
-        <Style Selector="^:pointerover /template/ Panel#PART_IconHost">
-            <Setter Property="RenderTransform" Value="translate(2px,0)" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ Panel#PART_Root">
-            <Setter Property="Opacity" Value="0.82" />
+        <Style Selector="^:pressed /template/ Border#PART_Hover">
+            <Setter Property="Opacity" Value="1" />
         </Style>
 
         <Style Selector="^:focus-visible /template/ Border#PART_Focus">
@@ -218,10 +190,6 @@
 
         <Style Selector="^:selected">
             <Setter Property="Foreground" Value="{DynamicResource AccentBackgroundBrush}" />
-        </Style>
-
-        <Style Selector="^:selected /template/ Border#PART_Selected">
-            <Setter Property="Opacity" Value="1" />
         </Style>
 
         <Style Selector="^:selected /template/ Border#PART_Indicator">
@@ -261,12 +229,8 @@
         </Style>
 
         <Style Selector="^:disabled /template/ Border#PART_Indicator">
-            <Setter Property="RenderTransform" Value="scale(1,0)" />
+            <Setter Property="RenderTransform" Value="scale(0,1)" />
             <Setter Property="Opacity" Value="0" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ Border#PART_Selected">
-            <Setter Property="Opacity" Value="0.4" />
         </Style>
     </Style>
 </Styles>

@@ -1,112 +1,120 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:onePointControls="clr-namespace:OnePointUI.Avalonia.Styling.Controls.OnePointControls"
+        xmlns:branding="clr-namespace:OnePointUI.Avalonia.Styling.Controls.OnePointControls.Branding"
         xmlns:sidebar="using:OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation.Sidebar">
     <Design.PreviewWith>
-        <Border Padding="20" Background="{DynamicResource BackgroundBrush}">
-            <sidebar:OnePointSidebar SelectedKey="Home" Height="420">
-                <sidebar:OnePointSidebar.BrandIcon>
-                    <onePointControls:FontIcon Glyph="&#xE80F;" FontSize="16" />
-                </sidebar:OnePointSidebar.BrandIcon>
-                <sidebar:OnePointSidebarItem Glyph="&#xE80F;"
-                                             ItemText="主页"
-                                             NavigationKey="Home" />
-                <sidebar:OnePointSidebarItem Glyph="&#xE74C;"
-                                             ItemText="扩展"
-                                             NavigationKey="Extensions"
-                                             BadgeText="2" />
-                <sidebar:OnePointSidebarItem Glyph="&#xE713;"
-                                             ItemText="设置"
-                                             NavigationKey="Settings" />
-                <sidebar:OnePointSidebar.Footer>
-                    <StackPanel Margin="8,0" Spacing="2">
-                        <sidebar:OnePointSidebarItem ItemText="退出" />
-                    </StackPanel>
-                </sidebar:OnePointSidebar.Footer>
-            </sidebar:OnePointSidebar>
+        <Border Padding="24" Background="{DynamicResource BackgroundBrush}">
+            <Border Height="420"
+                    CornerRadius="8"
+                    ClipToBounds="True">
+                <sidebar:OnePointSidebar SelectedKey="Home">
+                    <sidebar:OnePointSidebar.BrandIcon>
+                        <branding:PulsarBrandMark Width="24" Height="24" />
+                    </sidebar:OnePointSidebar.BrandIcon>
+                    <sidebar:OnePointSidebarItem Glyph="&#xE80F;" ItemText="主页" NavigationKey="Home" />
+                    <sidebar:OnePointSidebarItem Glyph="&#xE74C;" ItemText="扩展" NavigationKey="Extensions" BadgeText="2" />
+                    <sidebar:OnePointSidebarItem Glyph="&#xE713;" ItemText="设置" NavigationKey="Settings" />
+                    <sidebar:OnePointSidebar.Footer>
+                        <StackPanel Margin="0,2,0,4" Spacing="4">
+                            <sidebar:OnePointSidebarItem ItemText="退出" />
+                        </StackPanel>
+                    </sidebar:OnePointSidebar.Footer>
+                </sidebar:OnePointSidebar>
+            </Border>
         </Border>
     </Design.PreviewWith>
 
     <!--
-        贴边侧边栏外壳 —— 相当于把底部停靠栏竖过来：
-        · 贴窗口左/上/下边缘，圆角与窗口边框同值（四角一致）
-        · 顶部品牌区固定 48px，与标题栏等高，侧边栏因此直接伸进标题栏带
-        · 导航项区沿用底栏节奏：44px 项高、8px 圆角、2px 间隔、8px 内缩
-        · 底部状态区与顶栏同一套留白，没有分隔线（与底栏一致）
-        · 只有右缘 1px 描边：另外三边就是窗口边缘
-        · 没有展开/折叠形态，宽度由宿主给定
+        贴边侧边栏外壳 —— 只有「图标栏」这一种形态（等价于底栏竖过来）：
+        · 贴窗口左/上/下边缘，圆角与窗口边框同值（四角一致），只有右缘一条 1px 描边
+        · 宽 72：与底栏按钮同宽，按钮横向不留内缩，竖排 44 高、间隔 4
+        · 顶部品牌区：品牌标记在上、产品名在下，整块与标题栏带重叠，因此侧边栏直接伸进标题栏
+        · 材质分三层，宿主按背景本体各自填：
+          PART_Backdrop —— 位图材质（模糊图），宿主用 PulsarCardBackdrop 贴在它上面
+          PART_Material —— 实时材质（侧边栏专用的模糊泰森多边形着色器）
+          PART_Mask     —— 亮度遮罩（深色压暗 / 浅色提亮），亚克力时置空
+        · 没有展开态：宽度固定，内容不随任何交互变化
     -->
     <Style Selector="sidebar|OnePointSidebar">
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Background" Value="{DynamicResource SidebarBackgroundBrush}" />
         <Setter Property="Focusable" Value="False" />
-        <!-- 定宽：侧边栏没有展开/折叠，宿主可覆盖一次就不必再管。 -->
-        <Setter Property="Width" Value="248" />
+        <Setter Property="Width" Value="72" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="SidebarCornerRadius" Value="8" />
         <Setter Property="ItemsPanel">
             <ItemsPanelTemplate>
-                <StackPanel Orientation="Vertical" Spacing="2" Margin="8,2,8,10" />
+                <StackPanel Orientation="Vertical" Spacing="4" Margin="0,4,0,4" />
             </ItemsPanelTemplate>
         </Setter>
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Name="PART_Root"
                         CornerRadius="{TemplateBinding SidebarCornerRadius}"
-                        Background="{DynamicResource SidebarBackgroundBrush}"
+                        Background="{TemplateBinding Background}"
                         BorderBrush="{DynamicResource SidebarBorderBrush}"
                         BorderThickness="0,0,1,0"
                         ClipToBounds="True">
-                    <Grid RowDefinitions="48,*,Auto">
-                        <!-- 品牌区：48px，与标题栏等高，落进标题栏的拖拽带 -->
-                        <Border Name="PART_Brand"
-                                Grid.Row="0"
-                                Padding="16,0,12,0">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <Panel>
+                        <!-- 位图材质层：宿主把预模糊位图贴在这一层的背景上（PulsarCardBackdrop 按控件位置裁剪）。 -->
+                        <Border Name="PART_Backdrop"
+                                Background="Transparent"
+                                IsHitTestVisible="False" />
+
+                        <!-- 实时材质层：宿主放着色器之类需要自己绘制的材质（如侧边栏专用的模糊泰森多边形）。 -->
+                        <ContentControl Name="PART_Material"
+                                        Content="{TemplateBinding Material}"
+                                        HorizontalContentAlignment="Stretch"
+                                        VerticalContentAlignment="Stretch"
+                                        IsHitTestVisible="False" />
+
+                        <!-- 亮度遮罩：深色压暗、浅色提亮，由宿主的 MaskBrush 决定给不给。 -->
+                        <Border Name="PART_Mask"
+                                Background="{TemplateBinding MaskBrush}"
+                                IsHitTestVisible="False" />
+
+                        <Grid RowDefinitions="64,*,Auto">
+                            <!-- 品牌区：标记在上、产品名在下，整块盖在标题栏带上 -->
+                            <StackPanel Name="PART_Brand"
+                                        Grid.Row="0"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Spacing="3">
                                 <ContentControl Name="PART_BrandIcon"
-                                                Width="28"
-                                                Height="28"
-                                                VerticalAlignment="Center"
+                                                Width="24"
+                                                Height="24"
                                                 HorizontalContentAlignment="Center"
                                                 VerticalContentAlignment="Center"
                                                 Content="{TemplateBinding BrandIcon}" />
+                                <TextBlock Name="PART_BrandText"
+                                           Text="{TemplateBinding BrandTitle}"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
 
-                                <StackPanel Name="PART_BrandText"
-                                            Grid.Column="1"
-                                            VerticalAlignment="Center"
-                                            Spacing="0">
-                                    <TextBlock Text="{TemplateBinding BrandTitle}"
-                                               FontSize="13"
-                                               FontWeight="SemiBold"
-                                               Foreground="{DynamicResource PrimaryForegroundBrush}"
-                                               TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{TemplateBinding BrandDescription}"
-                                               FontSize="10"
-                                               Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}"
-                                               TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
-                            </Grid>
-                        </Border>
+                            <!-- 导航项：内容溢出时内部滚动，滚动条不吃掉侧边栏宽度 -->
+                            <ScrollViewer Grid.Row="1"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          VerticalScrollBarVisibility="Auto"
+                                          Background="Transparent">
+                                <ItemsPresenter Name="PART_ItemsPresenter"
+                                                ItemsPanel="{TemplateBinding ItemsPanel}" />
+                            </ScrollViewer>
 
-                        <!-- 导航项：内容溢出时内部滚动，滚动条不吃掉侧边栏宽度 -->
-                        <ScrollViewer Grid.Row="1"
-                                      HorizontalScrollBarVisibility="Disabled"
-                                      VerticalScrollBarVisibility="Auto"
-                                      Background="Transparent">
-                            <ItemsPresenter Name="PART_ItemsPresenter"
-                                            ItemsPanel="{TemplateBinding ItemsPanel}" />
-                        </ScrollViewer>
-
-                        <!-- 底部状态区 -->
-                        <Border Name="PART_Footer"
-                                Grid.Row="2"
-                                Padding="0,4,0,10"
-                                IsVisible="{TemplateBinding HasFooter}">
-                            <ContentControl Name="PART_FooterHost"
-                                            Content="{TemplateBinding Footer}"
-                                            HorizontalContentAlignment="Stretch" />
-                        </Border>
-                    </Grid>
+                            <!-- 底部状态区 -->
+                            <Border Name="PART_Footer"
+                                    Grid.Row="2"
+                                    Padding="0,4,0,8"
+                                    IsVisible="{TemplateBinding HasFooter}">
+                                <ContentControl Name="PART_FooterHost"
+                                                Content="{TemplateBinding Footer}"
+                                                HorizontalContentAlignment="Stretch" />
+                            </Border>
+                        </Grid>
+                    </Panel>
                 </Border>
             </ControlTemplate>
         </Setter>

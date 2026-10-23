@@ -59,6 +59,7 @@
     <!-- ColorPicker requires Avalonia.Controls.ColorPicker package; uncomment after adding the package reference -->
     <!--<StyleInclude Source="BasicControls/ColorPicker.axaml" />-->
 
+    <StyleInclude Source="OnePointControls/Branding/PulsarBrandMark.axaml" />
     <StyleInclude Source="OnePointControls/LineTextBlock.axaml" />
     <StyleInclude Source="OnePointControls/FontIcon.axaml" />
     <StyleInclude Source="OnePointControls/ToolIcon.axaml" />

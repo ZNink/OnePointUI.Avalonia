@@ -1,0 +1,69 @@
+// 侧边栏专用的泰森多边形。
+//
+// 与整窗背景的 voronoi.sksl 的差别（后者刻意保持原样，不受这里影响）：
+//   · 细胞按像素尺度定义，一条 72px 宽、几百像素高的竖条里横向只有两个细胞，
+//     因此不会碎成噪点，读起来是几团柔和的色块；
+//   · 细胞边界用「按距离指数加权的颜色混合」抹开，等价于对颜色场做了一次解析模糊，
+//     不需要后处理模糊通道就能得到带模糊的多边形；
+//   · 每个细胞按 id 哈希取自己的色阶（而不是按位置插值），相邻细胞才有可辨的边界；
+//   · 漂移更慢（0.35 倍），侧边栏是常驻的静态区域，动得太快会抢内容注意力。
+
+vec3 blendOverlay(vec3 base, vec3 blend) {
+    return vec3(
+        base.r < 0.5 ? (2.0 * base.r * blend.r) : (1.0 - 2.0 * (1.0 - base.r) * (1.0 - blend.r)),
+        base.g < 0.5 ? (2.0 * base.g * blend.g) : (1.0 - 2.0 * (1.0 - base.g) * (1.0 - blend.g)),
+        base.b < 0.5 ? (2.0 * base.b * blend.b) : (1.0 - 2.0 * (1.0 - base.b) * (1.0 - blend.b))
+    );
+}
+
+vec2 ran(vec2 uv) {
+    uv *= vec2(dot(uv, vec2(127.1, 311.7)), dot(uv, vec2(227.1, 521.7)));
+    return 1.0 - fract(tan(cos(uv) * 123.6) * 3533.3) * fract(tan(cos(uv) * 123.6) * 3533.3);
+}
+
+vec2 pt(vec2 id) {
+    return sin(iTime * 0.35 * (ran(id + .5) - 0.5) + ran(id - 20.1) * 8.0) * 0.5;
+}
+
+vec4 main(vec2 fragCoord)
+{
+    // 细胞边长（像素）。侧边栏宽 72，取 34 让横向约两个细胞、
+    // 一个屏幕高度里十几团色块 —— 再多就碎，再少就只剩一条渐变。
+    float CELL = 34.0;
+    // 模糊强度：权重衰减系数，越小越糊。2.4 大约把边界糊开 30% 个细胞宽。
+    float SOFT = 2.4;
+
+    // 漂移量直接给像素：往右缓慢平移、往左上极慢爬升，避免整条侧边栏“流水线”感。
+    vec2 offset = vec2(iTime * 0.35, -iTime * 0.22);
+    vec2 uv = (fragCoord + offset) / CELL;
+
+    vec2 gv = fract(uv) - 0.5;
+    vec2 id = floor(uv);
+
+    vec3 accum = vec3(0.0);
+    float weightSum = 0.0;
+    for (float i = -1.; i <= 1.; i++) {
+        for (float j = -1.; j <= 1.; j++) {
+            vec2 offv = vec2(i, j);
+            vec2 cid = id + offv;
+            float dist = length(gv + pt(cid) - offv);
+            // 指数权重：等距的相邻细胞在边界上各占一半，进入细胞内部后迅速回归本色。
+            float weight = exp(-dist * SOFT);
+            // 每个细胞取自己的色阶（按细胞 id 哈希，而不是按位置插值）。
+            // 按位置插值会让相邻细胞颜色连续，糊开之后只剩一条竖直渐变，
+            // 根本看不出是多边形；按 id 哈希才有“一团一块”的边界。
+            float tone = ran(cid + 3.7).x;
+            // 位置项只占小权重：让整条侧边栏仍有一个从上到下的整体走向，不至于碎成噪点。
+            float flow = clamp((cid + pt(cid)).y * CELL / 960.0 * 1.2, 0.0, 1.0);
+            float mixValue = clamp(0.08 + 0.82 * tone + 0.15 * flow, 0.0, 1.0);
+            // 只用 primary ↔ base 两档：iAccent 在深色主题里几乎是纯黑，
+            // 拿它做远端会让侧边栏下半段直接黑掉，材质感全无。
+            accum += mix(iPrimary, iBase, mixValue) * weight;
+            weightSum += weight;
+        }
+    }
+
+    vec3 col = accum / max(weightSum, 1e-4);
+    vec3 comp = blendOverlay(iBase, col);
+    return vec4(comp, iAlpha);
+}

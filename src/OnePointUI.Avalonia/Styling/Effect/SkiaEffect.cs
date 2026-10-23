@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -34,6 +34,15 @@ public class SkiaEffect
     private readonly string _rawShaderString;
 
     private readonly string _shaderString;
+
+    // 该 effect 实际声明过的 uniform 名字。SKRuntimeEffect.Uniforms 每次读取都会
+    // 从原生侧封送一个新数组，所以只在第一次使用时缓存下来。
+    private HashSet<string>? _declaredUniforms;
+
+    // 宿主追加的 uniform（键为 shader 里声明过的名字）。这里只存引用不拷贝，
+    // 调用方可以逐帧改值而不必重建字典；每帧只注入该 effect 真正声明过的那些，
+    // 未声明的名字直接跳过，避免 SKRuntimeEffectUniforms 抛异常。
+    private IReadOnlyDictionary<string, object>? _extraUniforms;
 
     static SkiaEffect()
     {
@@ -160,6 +169,30 @@ public class SkiaEffect
         return effect._shaderString == _shaderString;
     }
 
+    /// <summary>
+    ///     给这个 effect 追加一组每帧注入的 uniform。
+    /// </summary>
+    /// <param name="uniforms">
+    ///     键是 shader 里声明过的 uniform 名。值按声明类型给：标量用 <see cref="float" />，
+    ///     vec2/vec3 用长度等于分量数的 <see cref="float" />[]。只保存引用，宿主之后原地
+    ///     改数组里的值就会立刻生效；当前 effect 没有声明的键会被忽略。
+    /// </param>
+    /// <remarks>
+    ///     标量必须用 <see cref="float" /> 而不是单元素数组：SkiaSharp 会校验
+    ///     Float 与 FloatArray 的类型，给错会抛
+    ///     <c>ArgumentOutOfRangeException: Unable to write a 'FloatArray' value to a 'Float' uniform</c>。
+    /// </remarks>
+    public void SetExtraUniforms(IReadOnlyDictionary<string, object>? uniforms)
+    {
+        _extraUniforms = uniforms;
+    }
+
+    private bool DeclaresUniform(string name)
+    {
+        _declaredUniforms ??= new HashSet<string>(Effect.Uniforms, StringComparer.Ordinal);
+        return _declaredUniforms.Contains(name);
+    }
+
     internal SKShader ToShaderWithUniforms(float timeSeconds, ThemeVariant activeVariant, Rect bounds,
         float animationScale, float alpha = 1f)
     {
@@ -176,6 +209,30 @@ public class SkiaEffect
             { "iDark", activeVariant == ThemeVariant.Dark ? 1f : 0f },
             { "iAlpha", alpha }
         };
+
+        // iTime 会被 AnimationSpeedScale 缩放，带物理单位（DIP/s）的动画没法直接用它。
+        // 约定：需要「真实秒」的 shader 自行声明 iFlowTime，这里补上未缩放的原始值。
+        if (DeclaresUniform("iFlowTime"))
+            inputs.Add("iFlowTime", timeSeconds);
+
+        if (_extraUniforms is { Count: > 0 } extras)
+        {
+            foreach (var (name, value) in extras)
+            {
+                if (!DeclaresUniform(name)) continue;
+
+                // 标量与向量走不同的重载：FloatArray 塞不进 Float uniform。
+                switch (value)
+                {
+                    case float scalar:
+                        inputs.Add(name, scalar);
+                        break;
+                    case float[] array:
+                        inputs.Add(name, array);
+                        break;
+                }
+            }
+        }
 
         return Effect.ToShader(inputs);
     }

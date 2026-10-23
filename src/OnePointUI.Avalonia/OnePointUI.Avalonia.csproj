@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -30,6 +30,8 @@
     <ItemGroup>
         <EmbeddedResource Include="Assets\Fonts\DinPro.ttf"/>
         <AvaloniaResource Include="Assets\OnePointUI.Icon.png"/>
+        <!-- Pulsar 品牌标记的设计源（PulsarBrandMark 用同一份路径数据描边绘制）。 -->
+        <AvaloniaResource Include="Assets\Icons\PulsarBrand.svg"/>
         <None Remove="Assets\Shader\voronoi.sksl"/>
     </ItemGroup>
 
@@ -49,6 +51,10 @@
 
     <ItemGroup>
         <EmbeddedResource Include="Assets\Shader\voronoi.sksl"/>
+        <None Remove="Assets\Shader\voronoi-sidebar.sksl"/>
+        <EmbeddedResource Include="Assets\Shader\voronoi-sidebar.sksl"/>
+        <None Remove="Assets\Shader\noise-marquee.sksl"/>
+        <EmbeddedResource Include="Assets\Shader\noise-marquee.sksl"/>
     </ItemGroup>
 
 </Project>
