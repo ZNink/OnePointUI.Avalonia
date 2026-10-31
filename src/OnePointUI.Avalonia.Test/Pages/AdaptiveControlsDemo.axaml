@@ -9,8 +9,8 @@
         <StackPanel Margin="16" Spacing="20">
 
             <!--
-                自适应演示：左侧容器宽度可拖拽调整，两个控件都参考「父级宽度」
-                在正常样式与动态样式之间切换（默认阈值 640）。
+                自适应演示：左侧容器宽度可拖拽调整。SegmentedButton 按父级阈值切换，
+                ButtonCluster 按自身 Bounds 与按钮自然宽度自动收缩。
             -->
             <onePointControls:LineTextBlock Text="自适应演示（拖拽分隔条调整左侧容器宽度）"
                                             FontSize="16" FontWeight="SemiBold" />
@@ -35,11 +35,10 @@
                             <onePointControls:SegmentedButtonItem Content="本地" />
                         </onePointControls:SegmentedButton>
 
-                        <TextBlock Text="按钮集群（ButtonCluster · Adaptive）"
+                        <TextBlock Text="按钮集群（ButtonCluster · 自动宽度）"
                                    Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
                         <onePointControls:ButtonCluster x:Name="AdaptiveCluster"
-                                                        DisplayMode="Adaptive"
-                                                        AdaptiveThresholdWidth="360">
+                                                        DisplayMode="Dynamic">
                             <onePointControls:ButtonClusterItem Content="启动" Glyph="&#xE7FC;" IsHighlighted="True" />
                             <onePointControls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
                             <onePointControls:ButtonClusterItem Content="日志" Glyph="&#xE9D2;" />
@@ -87,11 +86,11 @@
                 </StackPanel>
             </StackPanel>
 
-            <onePointControls:LineTextBlock Text="ButtonCluster 三套样式"
+            <onePointControls:LineTextBlock Text="ButtonCluster 宽度行为"
                                             FontSize="16" FontWeight="SemiBold" />
             <StackPanel Spacing="16">
                 <StackPanel Spacing="4">
-                    <TextBlock Text="正常样式（统一面板 + 常规按钮）"
+                    <TextBlock Text="默认 Dynamic（空间足够时完整展示）"
                                Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
                     <onePointControls:ButtonCluster>
                         <onePointControls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" />
@@ -101,9 +100,9 @@
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="动态样式（高亮按钮默认展开，悬停展开其余）"
+                    <TextBlock Text="限制集群自身宽度（高亮按钮默认展开，悬停展开其余）"
                                Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
-                    <onePointControls:ButtonCluster DisplayMode="Dynamic">
+                    <onePointControls:ButtonCluster DisplayMode="Dynamic" Width="240">
                         <onePointControls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" IsHighlighted="True" />
                         <onePointControls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
                         <onePointControls:ButtonClusterItem Content="日志" />
@@ -111,9 +110,9 @@
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="动态样式 + 主项不显示文本（ShowPrimaryItemText=False）"
+                    <TextBlock Text="限制宽度 + 主项不显示文本（ShowPrimaryItemText=False）"
                                Foreground="{DynamicResource PrimaryForegroundSecondaryBrush}" />
-                    <onePointControls:ButtonCluster DisplayMode="Dynamic" ShowPrimaryItemText="False">
+                    <onePointControls:ButtonCluster DisplayMode="Dynamic" Width="200" ShowPrimaryItemText="False">
                         <onePointControls:ButtonClusterItem Content="启动游戏" Glyph="&#xE7FC;" IsHighlighted="True" />
                         <onePointControls:ButtonClusterItem Content="修复" Glyph="&#xE90F;" />
                     </onePointControls:ButtonCluster>

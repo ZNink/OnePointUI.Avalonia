@@ -15,16 +15,15 @@ namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls;
 /// 按钮本身无边框、彼此无缝隙，视觉完全由按钮表面承担。
 /// </summary>
 /// <remarks>
-/// <para>三套显示样式（<see cref="DisplayMode"/>）：</para>
+/// <para><see cref="DisplayMode"/> 默认使用动态档位，并根据按钮集群自身的可用宽度自动决定是否收缩：</para>
 /// <list type="bullet">
-/// <item><b>正常样式</b>（默认）：统一面板 + 完整按钮（图标 + 文本），按钮间无缝隙。</item>
-/// <item><b>动态样式</b>：默认仅主项（<see cref="PrimaryItemMode"/> 指定，默认取高亮按钮）展开，
-/// 其余按钮收缩为图标（无图标时显示名称首字符头像）；鼠标移到任一按钮上时该按钮临时展开，
-/// 且与主项展开<b>互斥</b>——任一时刻至多一个按钮处于展开态，指针移出后主项恢复展开。
-/// 悬停粘滞按「最后一次真实指针移动」判定，布局动画期间的命中重算不会令展开态易主。</item>
-/// <item><b>自适应样式</b>：父级宽度低于 <see cref="AdaptiveThresholdWidth"/> 时自动进入动态样式，
-/// 宽度恢复后自动回到正常样式，切换过程播放非线性过渡动画。</item>
+/// <item>先测量所有按钮的自然宽度，再与集群自身的实际宽度比较；空间足够时完整展示，空间不足时仅展开主项，其他按钮收缩为图标或首字符头像。</item>
+/// <item>主项由 <see cref="PrimaryItemMode"/> 指定，默认取高亮按钮；鼠标移到任一按钮上时该按钮临时展开，且与主项展开<b>互斥</b>。</item>
+/// <item>自然宽度按条目缓存，并在内容、图标或排版属性变化后合并重测，避免布局动画期间反复递归测量。</item>
 /// </list>
+/// <para>为了兼容旧 XAML，显式设置 <see cref="AdaptiveDisplayMode.Normal"/> 会自动归一为
+/// <see cref="AdaptiveDisplayMode.Dynamic"/>。<see cref="AdaptiveDisplayMode.Adaptive"/> 保留为兼容值，
+/// 但 ButtonCluster 同样使用自身宽度的自动计算，不再读取父级宽度。</para>
 /// </remarks>
 public class ButtonCluster : ItemsControl
 {
@@ -40,9 +39,14 @@ public class ButtonCluster : ItemsControl
     /// <summary>默认收缩宽度。</summary>
     internal const double DefaultCollapsedItemWidth = 40;
 
+    private const double WidthEpsilon = 0.5;
+
     private AdaptiveWidthTracker? _tracker;
     private ButtonClusterItem? _primaryItem;
     private bool _dynamicActive;
+    private bool _widthEvaluationQueued;
+    private bool _evaluatingWidth;
+    private bool _hasWidthDecision;
 
     /// <summary>当前持有「临时展开资格」的按钮（悬停 / 键盘聚焦申领，全局唯一）。</summary>
     private ButtonClusterItem? _temporaryItem;
@@ -57,7 +61,9 @@ public class ButtonCluster : ItemsControl
     private bool _primaryRestoreDeferred;
 
     public static readonly StyledProperty<AdaptiveDisplayMode> DisplayModeProperty =
-        AvaloniaProperty.Register<ButtonCluster, AdaptiveDisplayMode>(nameof(DisplayMode));
+        AvaloniaProperty.Register<ButtonCluster, AdaptiveDisplayMode>(
+            nameof(DisplayMode),
+            defaultValue: AdaptiveDisplayMode.Dynamic);
 
     public static readonly StyledProperty<double> AdaptiveThresholdWidthProperty =
         AvaloniaProperty.Register<ButtonCluster, double>(
@@ -67,7 +73,7 @@ public class ButtonCluster : ItemsControl
     public static readonly StyledProperty<AdaptiveWidthSource> AdaptiveWidthSourceProperty =
         AvaloniaProperty.Register<ButtonCluster, AdaptiveWidthSource>(
             nameof(AdaptiveWidthSource),
-            defaultValue: AdaptiveWidthSource.Parent);
+            defaultValue: AdaptiveWidthSource.Self);
 
     public static readonly StyledProperty<double> AdaptiveHysteresisWidthProperty =
         AvaloniaProperty.Register<ButtonCluster, double>(
@@ -99,7 +105,7 @@ public class ButtonCluster : ItemsControl
     static ButtonCluster()
     {
         DisplayModeProperty.Changed.AddClassHandler<ButtonCluster>(
-            (cluster, _) => cluster.OnAdaptiveSettingsChanged());
+            (cluster, change) => cluster.OnDisplayModeChanged((AdaptiveDisplayMode)change.NewValue!));
         AdaptiveThresholdWidthProperty.Changed.AddClassHandler<ButtonCluster>(
             (cluster, _) => cluster.OnAdaptiveSettingsChanged());
         AdaptiveHysteresisWidthProperty.Changed.AddClassHandler<ButtonCluster>(
@@ -118,9 +124,17 @@ public class ButtonCluster : ItemsControl
         PrimaryItemModeProperty.Changed.AddClassHandler<ButtonCluster>(
             (cluster, _) => cluster.InvalidatePrimary());
         ItemSpacingProperty.Changed.AddClassHandler<ButtonCluster>(
-            (cluster, _) => cluster.UpdateItemsPanel());
+            (cluster, _) =>
+            {
+                cluster.UpdateItemsPanel();
+                cluster.QueueWidthEvaluation();
+            });
         OrientationProperty.Changed.AddClassHandler<ButtonCluster>(
-            (cluster, _) => cluster.UpdateItemsPanel());
+            (cluster, _) =>
+            {
+                cluster.UpdateItemsPanel();
+                cluster.QueueWidthEvaluation();
+            });
     }
 
     /// <summary>显示样式档位。</summary>
@@ -130,21 +144,24 @@ public class ButtonCluster : ItemsControl
         set => SetValue(DisplayModeProperty, value);
     }
 
-    /// <summary>自适应阈值：参考宽度低于该值时切换为动态样式。≤ 0 视为关闭自适应。</summary>
+    /// <summary>
+    /// 兼容旧 API 的阈值属性。ButtonCluster 的 Dynamic/Adaptive 档位现在根据自身宽度与按钮自然宽度自动判断，
+    /// 不再使用固定阈值；该属性仅保留以避免旧 XAML 失效。
+    /// </summary>
     public double AdaptiveThresholdWidth
     {
         get => GetValue(AdaptiveThresholdWidthProperty);
         set => SetValue(AdaptiveThresholdWidthProperty, value);
     }
 
-    /// <summary>阈值参考的宽度来源：父级控件（默认）或控件自身。</summary>
+    /// <summary>兼容旧 API 的宽度来源属性。ButtonCluster 始终使用自身实际宽度进行自动计算。</summary>
     public AdaptiveWidthSource AdaptiveWidthSource
     {
         get => GetValue(AdaptiveWidthSourceProperty);
         set => SetValue(AdaptiveWidthSourceProperty, value);
     }
 
-    /// <summary>滞回宽度：进入动态样式后，需参考宽度 ≥ 阈值 + 滞回才切回正常样式。0 表示关闭滞回。</summary>
+    /// <summary>自动宽度判断的滞回值：收缩后需要多出该宽度才恢复完整展示，避免边界反复切换。</summary>
     public double AdaptiveHysteresisWidth
     {
         get => GetValue(AdaptiveHysteresisWidthProperty);
@@ -196,29 +213,48 @@ public class ButtonCluster : ItemsControl
         set => SetValue(OrientationProperty, value);
     }
 
-    /// <summary>动态样式当前是否生效（自适应判定后的实际状态）。</summary>
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property.Name is nameof(Padding)
+            or nameof(BorderThickness)
+            or nameof(MinWidth))
+        {
+            QueueWidthEvaluation();
+        }
+    }
+
+    /// <summary>自动宽度判断后的动态收缩状态。</summary>
     internal bool IsDynamicEffective => _dynamicActive;
 
     public ButtonCluster()
     {
-        Items.CollectionChanged += (_, _) => InvalidatePrimary();
+        Items.CollectionChanged += (_, _) =>
+        {
+            InvalidatePrimary();
+            QueueWidthEvaluation();
+        };
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
         UpdateItemsPanel();
+        QueueWidthEvaluation();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
 
-        _tracker ??= new AdaptiveWidthTracker(this, () => AdaptiveWidthSource == AdaptiveWidthSource.Parent);
+        // ButtonCluster 的自动布局只观察自身最终分配到的宽度，切断父级宽度变化与
+        // 条目收缩之间的反馈环。AdaptiveWidthSource 属性仅为旧 XAML 保留。
+        _tracker ??= new AdaptiveWidthTracker(this, () => false);
         _tracker.WidthChanged -= OnTrackedWidthChanged;
         _tracker.WidthChanged += OnTrackedWidthChanged;
         _tracker.Start();
-        EvaluateAdaptive();
+        QueueWidthEvaluation();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -270,20 +306,119 @@ public class ButtonCluster : ItemsControl
             : items.FirstOrDefault();
     }
 
-    private void OnAdaptiveSettingsChanged() => EvaluateAdaptive();
-
-    private void OnTrackedWidthChanged(object? sender, EventArgs e) => EvaluateAdaptive();
-
-    private void EvaluateAdaptive()
+    private void OnDisplayModeChanged(AdaptiveDisplayMode mode)
     {
-        var width = _tracker?.ObservedWidth ?? 0d;
-        var active = AdaptiveDisplayMath.IsDynamicActive(
-            DisplayMode,
-            width,
-            AdaptiveThresholdWidth,
-            AdaptiveHysteresisWidth,
-            _dynamicActive);
-        SetDynamicActive(active);
+        if (mode == AdaptiveDisplayMode.Normal)
+        {
+            // Normal 已从 ButtonCluster 的公开语义中移除；保留一次归一化，避免
+            // 旧配置把控件切回未托管宽度。
+            SetValue(DisplayModeProperty, AdaptiveDisplayMode.Dynamic);
+            return;
+        }
+
+        QueueWidthEvaluation();
+    }
+
+    private void OnAdaptiveSettingsChanged() => QueueWidthEvaluation();
+
+    private void OnTrackedWidthChanged(object? sender, EventArgs e) => QueueWidthEvaluation();
+
+    /// <summary>
+    /// 合并同一布局批次内的多次宽度变化。条目宽度动画会触发连续 Bounds 通知，
+    /// 只在 Loaded 优先级统一计算一次，避免每帧重新遍历并测量所有按钮。
+    /// </summary>
+    internal void QueueWidthEvaluation()
+    {
+        if (_widthEvaluationQueued)
+        {
+            return;
+        }
+
+        _widthEvaluationQueued = true;
+        Dispatcher.UIThread.Post(
+            () =>
+            {
+                _widthEvaluationQueued = false;
+                EvaluateAutoWidth();
+            },
+            DispatcherPriority.Loaded);
+    }
+
+    private void EvaluateAutoWidth()
+    {
+        if (_evaluatingWidth)
+        {
+            return;
+        }
+
+        // 只使用 ButtonCluster 实际获得的 Bounds。Measure 的 availableSize 来自
+        // 父级约束，即使集群自身更窄，也可能错误地认为空间足够。
+        var availableWidth = Bounds.Width;
+        var naturalWidth = MeasureNaturalClusterWidth();
+        if (!(availableWidth > 0)
+            || !double.IsFinite(availableWidth)
+            || !(naturalWidth > 0)
+            || !double.IsFinite(naturalWidth))
+        {
+            // 布局尚未给出有效宽度或模板尚未完成时保持当前状态，等待下一次
+            // Bounds / Loaded / 内容变化通知，不在竞态窗口强行切换。
+            return;
+        }
+
+        var hysteresis = _hasWidthDecision ? Math.Max(0, AdaptiveHysteresisWidth) : 0;
+        var active = _hasWidthDecision && _dynamicActive
+            ? availableWidth + WidthEpsilon < naturalWidth + hysteresis
+            : availableWidth + WidthEpsilon < naturalWidth;
+
+        _hasWidthDecision = true;
+        if (_dynamicActive == active)
+        {
+            return;
+        }
+
+        _evaluatingWidth = true;
+        try
+        {
+            SetDynamicActive(active);
+        }
+        finally
+        {
+            _evaluatingWidth = false;
+        }
+    }
+
+    private double MeasureNaturalClusterWidth()
+    {
+        var count = 0;
+        var horizontalWidth = 0d;
+        var verticalWidth = 0d;
+        foreach (var item in EnumerateItems())
+        {
+            var width = item.GetNaturalWidth();
+            if (!(width > 0) || !double.IsFinite(width))
+            {
+                return double.NaN;
+            }
+
+            count++;
+            horizontalWidth += width;
+            verticalWidth = Math.Max(verticalWidth, width);
+        }
+
+        if (count == 0)
+        {
+            return double.NaN;
+        }
+
+        var contentWidth = Orientation == Orientation.Horizontal
+            ? horizontalWidth + Math.Max(0, count - 1) * ItemSpacing
+            : verticalWidth;
+        var padding = Padding;
+        var border = BorderThickness;
+        var outerWidth = contentWidth
+            + padding.Left + padding.Right
+            + border.Left + border.Right;
+        return Math.Max(outerWidth, MinWidth);
     }
 
     private void SetDynamicActive(bool active)
@@ -541,6 +676,11 @@ public class ButtonClusterItem : Button
     private bool _widthManaged;
     private bool _identityDirty;
     private bool _refreshQueued;
+    private double _naturalWidth = double.NaN;
+    private bool _naturalWidthDirty = true;
+    private Thickness _naturalPadding;
+    private double _naturalMinWidth;
+    private bool _naturalMetricsInitialized;
 
     static ButtonClusterItem()
     {
@@ -591,7 +731,36 @@ public class ButtonClusterItem : Button
         _avatarHost = e.NameScope.Find<Control>("PART_Avatar");
         _avatarText = e.NameScope.Find<TextBlock>("PART_AvatarText");
         _fullRow = e.NameScope.Find<Grid>("PART_FullRow");
+        InvalidateNaturalWidth();
         UpdateIdentityVisuals(showText: !_compact);
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        // 文本排版属性变化也会改变自然宽度。使用属性名而不是硬编码具体注册字段，
+        // 兼容 Avalonia 在不同版本中对 TextElement 属性的静态声明位置变化。
+        if (change.Property.Name is nameof(Padding) or nameof(MinWidth))
+        {
+            if (_compact && !_expanded)
+            {
+                // collapsed 样式会清除 Padding / MinWidth；保留展开态度量值，避免
+                // 宽度动画期间把自然宽度缓存覆盖为收缩尺寸。
+                _naturalWidthDirty = true;
+                return;
+            }
+
+            CaptureNaturalMetrics();
+            InvalidateNaturalWidth();
+        }
+        else if (change.Property.Name is nameof(FontSize)
+            or nameof(FontFamily)
+            or nameof(FontWeight)
+            or nameof(FontStyle))
+        {
+            InvalidateNaturalWidth();
+        }
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -719,7 +888,14 @@ public class ButtonClusterItem : Button
     private void OnIdentityChanged()
     {
         _identityDirty = true;
+        InvalidateNaturalWidth();
         QueueRefresh();
+    }
+
+    private void InvalidateNaturalWidth()
+    {
+        _naturalWidthDirty = true;
+        _host?.QueueWidthEvaluation();
     }
 
     /// <summary>
@@ -761,8 +937,16 @@ public class ButtonClusterItem : Button
     /// 全程保持确定值。返回 <see cref="double.NaN"/> 表示模板尚未就绪、无法测量，
     /// 调用方应保持当前宽度不变。
     /// </remarks>
-    private double MeasureNaturalWidth()
+    /// <summary>
+    /// 返回展开态自然宽度。连续布局刷新复用缓存，只有内容或排版属性变化后才重新测量。
+    /// </summary>
+    internal double GetNaturalWidth()
     {
+        if (!_naturalWidthDirty && double.IsFinite(_naturalWidth))
+        {
+            return _naturalWidth;
+        }
+
         // 首次测量可能发生在模板应用之前（条目一附加到可视树就会触发刷新），
         // 而旧实现借整体 Measure 隐式应用了模板；这里显式应用，确保内容行就绪。
         ApplyTemplate();
@@ -772,15 +956,51 @@ public class ButtonClusterItem : Button
             return double.NaN;
         }
 
+        if (!_naturalMetricsInitialized || (!_compact || _expanded))
+        {
+            CaptureNaturalMetrics();
+        }
+
         var height = Bounds.Height > 0 ? Bounds.Height : (MinHeight > 0 ? MinHeight : 36);
-        var content = AdaptiveItemMetrics.MeasureContentRowWidth(_fullRow, height);
-        if (!(content > 0))
+        var rowMargin = _fullRow.Margin;
+        var hideText = Classes.Contains(ButtonCluster.ItemNoTextClass);
+        if (hideText)
+        {
+            // 收缩态可能因 no-text 隐藏文本列；测自然宽度时临时恢复，完成后还原。
+            SetClass(ButtonCluster.ItemNoTextClass, false);
+        }
+
+        double measuredRowWidth;
+        try
+        {
+            measuredRowWidth = AdaptiveItemMetrics.MeasureContentRowWidth(_fullRow, height);
+        }
+        finally
+        {
+            if (hideText)
+            {
+                SetClass(ButtonCluster.ItemNoTextClass, true);
+            }
+        }
+
+        var contentWidth = measuredRowWidth - rowMargin.Left - rowMargin.Right;
+        if (!double.IsFinite(contentWidth) || contentWidth < 0)
         {
             return double.NaN;
         }
 
-        var padding = Padding;
-        return Math.Max(content + padding.Left + padding.Right, MinWidth);
+        _naturalWidth = Math.Max(
+            contentWidth + _naturalPadding.Left + _naturalPadding.Right,
+            _naturalMinWidth);
+        _naturalWidthDirty = false;
+        return _naturalWidth;
+    }
+
+    private void CaptureNaturalMetrics()
+    {
+        _naturalPadding = Padding;
+        _naturalMinWidth = MinWidth;
+        _naturalMetricsInitialized = true;
     }
 
     /// <summary>
@@ -848,7 +1068,7 @@ public class ButtonClusterItem : Button
                 // 内容变化（_identityDirty）时同样走这里，防止本地化切换后
                 // 文本被旧宽度裁切。
                 _identityDirty = false;
-                var natural = MeasureNaturalWidth();
+                var natural = GetNaturalWidth();
                 if (!double.IsNaN(natural))
                 {
                     Width = natural;
@@ -868,7 +1088,7 @@ public class ButtonClusterItem : Button
             // 首次进入动态样式：固化实测自然宽度，保证过渡两端都是具体数值。
             // 模板尚未就绪时测量失败（NaN）：保持自动宽度，待后续刷新补齐。
             _widthManaged = true;
-            var initial = MeasureNaturalWidth();
+            var initial = GetNaturalWidth();
             if (!double.IsNaN(initial))
             {
                 AdaptiveItemMetrics.SetWidthImmediate(this, initial);
@@ -885,7 +1105,7 @@ public class ButtonClusterItem : Button
         if (expanded)
         {
             // 过渡：收缩宽度 → 实测自然宽度。测量失败（模板未就绪）时保持原宽度。
-            var natural = MeasureNaturalWidth();
+            var natural = GetNaturalWidth();
             if (!double.IsNaN(natural))
             {
                 Width = natural;
