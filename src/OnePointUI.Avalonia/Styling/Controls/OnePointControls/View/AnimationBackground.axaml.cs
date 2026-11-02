@@ -223,11 +223,13 @@ public partial class AnimationBackground : UserControl
     }
 
     /// <summary>
-    /// 停掉渲染循环（不再逐帧重绘着色器）。
+    /// 暂停渲染循环（不再逐帧重绘着色器），画面停在最后一帧。
     /// </summary>
     /// <remarks>
-    /// 宿主切到别的材质时调用：光把 <c>IsVisible</c> 置 false 只是不画，
-    /// 合成器的动画回调仍在跑，白白占 GPU。
+    /// <para>宿主切到别的材质、或窗口失去焦点时调用：合成器的动画回调停掉，
+    /// 计时器一起停，因此不会白占 GPU。</para>
+    /// <para><b>不隐藏</b>渲染器：这一层是窗口背景本体，藏掉就等于背景消失、
+    /// 直接露出窗口亚克力。暂停与隐藏是两件事。</para>
     /// </remarks>
     public void Stop() => SkiaShaderRenderer.Stop();
 

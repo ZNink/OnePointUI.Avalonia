@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Rendering.Composition;
 using SkiaSharp;
@@ -10,6 +10,7 @@ public sealed class SkiaShaderRenderer : Control
     private CompositionCustomVisual? _customVisual;
     private SkiaEffect? _sukiEffect;
     private bool _isRunning;
+    private bool _isPaused;
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
@@ -21,8 +22,9 @@ public sealed class SkiaShaderRenderer : Control
         var visualHandler = new ShaderDraw();
         _customVisual = comp.CreateCustomVisual(visualHandler);
         ElementComposition.SetElementChildVisual(this, _customVisual);
-        // 仅在 IsVisible 状态下才启动动画，避免后台/不可见时持续占用 GPU
-        if (IsVisible) SendStart();
+        // 仅在 IsVisible 且未被主动暂停时才启动动画，避免后台/不可见时持续占用 GPU；
+        // 暂停中的渲染器重新挂载时也要保持暂停，不能因为 IsVisible 还是 true 就自己跑起来。
+        if (IsVisible && !_isPaused) SendStart();
         if (_sukiEffect != null)
             _customVisual.SendHandlerMessage(_sukiEffect);
 
@@ -35,14 +37,25 @@ public sealed class SkiaShaderRenderer : Control
         _customVisual.Size = new Vector(Bounds.Width, Bounds.Height);
     }
 
+    /// <summary>
+    /// 暂停动画：画面冻结在当前帧，<b>不</b>隐藏渲染器。
+    /// </summary>
+    /// <remarks>
+    /// <para>隐藏（<c>IsVisible = false</c>）会把整层着色器从合成结果里摘掉，露出下面
+    /// 的窗口材质。宿主在窗口失去焦点时调用本方法只是为了省掉逐帧重绘，
+    /// 窗口仍然可见——一旦顺手把渲染器藏掉，背景就会整块消失、回退成亚克力。</para>
+    /// <para><see cref="EffectDrawBase.StopAnimations"/> 同时停掉动画计时器，因此
+    /// 最后一帧会原样保留，重新 <see cref="Start"/> 后从暂停处继续，不会跳帧。</para>
+    /// </remarks>
     public void Stop()
     {
-        IsVisible = false;
+        _isPaused = true;
         SendStop();
     }
 
     public void Start()
     {
+        _isPaused = false;
         IsVisible = true;
         SendStart();
     }
@@ -77,9 +90,10 @@ public sealed class SkiaShaderRenderer : Control
         }
         else if (change.Property == IsVisibleProperty)
         {
-            // 跟随 IsVisible 自动启停动画，避免后台 60fps 空转
-            if (IsVisible) SendStart();
-            else SendStop();
+            // 跟随 IsVisible 自动启停动画，避免后台 60fps 空转。
+            // 重新显示时若宿主已经主动暂停过，就不要自行恢复动画。
+            if (!IsVisible) SendStop();
+            else if (!_isPaused) SendStart();
         }
     }
 

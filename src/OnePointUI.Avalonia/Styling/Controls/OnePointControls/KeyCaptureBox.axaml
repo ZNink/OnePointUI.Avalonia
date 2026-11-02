@@ -1,0 +1,97 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:OnePointUI.Avalonia.Styling.Controls.OnePointControls">
+    <Design.PreviewWith>
+        <Border Padding="20"
+                Background="{DynamicResource BackgroundBrush}">
+            <StackPanel Spacing="12"
+                        Width="200">
+                <controls:KeyCaptureBox Value="I"
+                                        ValueText="I" />
+                <controls:KeyCaptureBox Value="NumPad4"
+                                        ValueText="Numpad4" />
+                <controls:KeyCaptureBox PlaceholderText="未绑定" />
+                <controls:KeyCaptureBox IsRecording="True"
+                                        IsEnabled="False"
+                                        RecordingText="按下按键…" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!--
+        几何与 OnePointUI 的 TextBox 对齐（圆角 6、1px 边框、同样的底色），
+        这样它能和页面上的输入框并排而不显得突兀；高度默认 36，需要更大的
+        点击区域时在页面上覆盖 Height。
+    -->
+    <Style Selector="controls|KeyCaptureBox">
+        <Setter Property="Height" Value="36" />
+        <Setter Property="MinWidth" Value="120" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrushOpacity}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <!-- 没有指针也能用：Tab 聚焦后按 Enter/Space 开始录制。 -->
+        <Setter Property="Focusable" Value="True" />
+        <Setter Property="TextAlignment" Value="Center" />
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="PART_Border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <TextBlock Name="PART_Value"
+                               Margin="{TemplateBinding Padding}"
+                               Text="{TemplateBinding DisplayText}"
+                               FontSize="{TemplateBinding FontSize}"
+                               Foreground="{TemplateBinding Foreground}"
+                               TextAlignment="{TemplateBinding TextAlignment}"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="NoWrap" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|KeyCaptureBox:pointerover /template/ Border#PART_Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderHoverBrush}" />
+    </Style>
+
+    <!-- 录制态：边框与文字都取主题色，明确"现在等的是你的按键"。 -->
+    <Style Selector="controls|KeyCaptureBox:recording /template/ Border#PART_Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+    </Style>
+
+    <Style Selector="controls|KeyCaptureBox:recording /template/ TextBlock#PART_Value">
+        <Setter Property="Foreground" Value="{DynamicResource AccentBackgroundBrush}" />
+    </Style>
+
+    <!-- 按到不接受的键：提示文字留在框内，边框仍是录制态，用户知道还能再按一个。 -->
+    <Style Selector="controls|KeyCaptureBox:rejected /template/ TextBlock#PART_Value">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundSecondaryBrush}" />
+    </Style>
+
+    <!-- 键盘聚焦（非录制）也要看得见：用虚化边框区分于录制态的主题色实线。 -->
+    <Style Selector="controls|KeyCaptureBox:focus-visible /template/ Border#PART_Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+    </Style>
+
+    <Style Selector="controls|KeyCaptureBox:disabled /template/ Border#PART_Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryDisabledBorderBrush}" />
+    </Style>
+
+    <Style Selector="controls|KeyCaptureBox:disabled /template/ TextBlock#PART_Value">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryDisabledForegroundBrush}" />
+    </Style>
+
+    <!-- 未绑定任何键：提示文本弱化，与真实绑定值区分开。 -->
+    <Style Selector="controls|KeyCaptureBox:empty /template/ TextBlock#PART_Value">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryDisabledForegroundBrush}" />
+    </Style>
+</Styles>

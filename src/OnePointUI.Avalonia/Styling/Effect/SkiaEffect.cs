@@ -27,10 +27,15 @@ public class SkiaEffect
     private static bool _disposed;
     private static readonly float[] White = [0.95f, 0.95f, 0.95f];
     private static readonly List<SkiaEffect> LoadedEffects = [];
+    private const double VoronoiHashPeriod = 64.0;
+    private const double VoronoiTau = 6.2831853;
+    private const double SidebarCellSize = 34.0;
     private static float[] _backgroundAlloc = new[] { 0.08f, 0.08f, 0.12f };
     private static float[] _backgroundAccentAlloc = new[] { 1.00f, 0.27f, 0.00f };
     private static float[] _backgroundPrimaryAlloc = new[] { 0.00f, 0.82f, 0.82f };
     private readonly float[] _boundsAlloc = new float[3];
+    private readonly float[] _voronoiDriftAlloc = new float[2];
+    private readonly float[] _sidebarDriftAlloc = new float[2];
     private readonly string _rawShaderString;
 
     private readonly string _shaderString;
@@ -193,16 +198,18 @@ public class SkiaEffect
         return _declaredUniforms.Contains(name);
     }
 
-    internal SKShader ToShaderWithUniforms(float timeSeconds, ThemeVariant activeVariant, Rect bounds,
+    internal SKShader ToShaderWithUniforms(double timeSeconds, ThemeVariant activeVariant, Rect bounds,
         float animationScale, float alpha = 1f)
     {
         _boundsAlloc[0] = (float)bounds.Width;
         _boundsAlloc[1] = (float)bounds.Height;
+        _boundsAlloc[2] = 0f;
+        var voronoiTime = GetBoundedVoronoiAnimation(timeSeconds, animationScale);
 
         var inputs = new SKRuntimeEffectUniforms(Effect)
         {
             { "iResolution", _boundsAlloc },
-            { "iTime", timeSeconds * animationScale },
+            { "iTime", (float)(timeSeconds * animationScale) },
             { "iBase", _backgroundAlloc },
             { "iAccent", _backgroundAccentAlloc },
             { "iPrimary", _backgroundPrimaryAlloc },
@@ -213,7 +220,22 @@ public class SkiaEffect
         // iTime 会被 AnimationSpeedScale 缩放，带物理单位（DIP/s）的动画没法直接用它。
         // 约定：需要「真实秒」的 shader 自行声明 iFlowTime，这里补上未缩放的原始值。
         if (DeclaresUniform("iFlowTime"))
-            inputs.Add("iFlowTime", timeSeconds);
+            inputs.Add("iFlowTime", (float)timeSeconds);
+
+        if (DeclaresUniform("iDrift"))
+        {
+            _voronoiDriftAlloc[0] = voronoiTime.DriftX;
+            _voronoiDriftAlloc[1] = voronoiTime.DriftY;
+            inputs.Add("iDrift", _voronoiDriftAlloc);
+        }
+        if (DeclaresUniform("iSidebarDrift"))
+        {
+            _sidebarDriftAlloc[0] = voronoiTime.SidebarDriftX;
+            _sidebarDriftAlloc[1] = voronoiTime.SidebarDriftY;
+            inputs.Add("iSidebarDrift", _sidebarDriftAlloc);
+        }
+        if (DeclaresUniform("iPhase"))
+            inputs.Add("iPhase", voronoiTime.Phase);
 
         if (_extraUniforms is { Count: > 0 } extras)
         {
@@ -237,13 +259,42 @@ public class SkiaEffect
         return Effect.ToShader(inputs);
     }
 
+    internal static (float DriftX, float DriftY, float SidebarDriftX, float SidebarDriftY, float Phase)
+        GetBoundedVoronoiAnimation(double timeSeconds, float animationScale)
+    {
+        var animationTime = timeSeconds * animationScale;
+        return (
+            Wrap(animationTime * (10.0 / 200.0), VoronoiHashPeriod),
+            Wrap(animationTime * (10.0 / 120.0), VoronoiHashPeriod),
+            Wrap(animationTime * 0.35, VoronoiHashPeriod * SidebarCellSize),
+            Wrap(animationTime * -0.22, VoronoiHashPeriod * SidebarCellSize),
+            Wrap(animationTime * 0.05, VoronoiTau));
+    }
+
+    private static float Wrap(double value, double period)
+    {
+        var wrapped = value % period;
+        if (wrapped < 0)
+            wrapped += period;
+
+        var result = (float)wrapped;
+        return result < period ? result : 0f;
+    }
+
     internal SKShader ToShaderWithCustomUniforms(Func<SKRuntimeEffect, SKRuntimeEffectUniforms> uniformFactory,
-        float timeSeconds, Rect bounds,
+        double timeSeconds, Rect bounds,
         float animationScale, float alpha = 1f)
     {
         var uniforms = uniformFactory(Effect);
+        var voronoiTime = GetBoundedVoronoiAnimation(timeSeconds, animationScale);
         uniforms.Add("iResolution", new[] { (float)bounds.Width, (float)bounds.Height, 0f });
-        uniforms.Add("iTime", timeSeconds * animationScale);
+        uniforms.Add("iTime", (float)(timeSeconds * animationScale));
+        if (DeclaresUniform("iDrift"))
+            uniforms.Add("iDrift", new[] { voronoiTime.DriftX, voronoiTime.DriftY });
+        if (DeclaresUniform("iSidebarDrift"))
+            uniforms.Add("iSidebarDrift", new[] { voronoiTime.SidebarDriftX, voronoiTime.SidebarDriftY });
+        if (DeclaresUniform("iPhase"))
+            uniforms.Add("iPhase", voronoiTime.Phase);
         uniforms.Add("iAlpha", alpha);
         return Effect.ToShader(uniforms);
     }

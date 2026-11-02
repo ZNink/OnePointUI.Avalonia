@@ -27,6 +27,8 @@ public enum ToolIconKind
     FeverBypass,
     VideoCape,
     McpInjection,
+    DllInjection,
+    GameSettings,
 }
 
 /// <summary>单个图标的几何定义：<see cref="Stroke" /> 为线稿，<see cref="Fill" /> 为点缀实心部分。</summary>
@@ -94,6 +96,12 @@ internal static class ToolIconGeometries
         [ToolIconKind.McpInjection] = new(
             StreamGeometry.Parse("M8.59 12.39L11.41 15.21L16.61 10.01L13.79 7.19ZM15.2 8.6L16.95 6.85M15.93 5.33L18.47 7.87M10 13.8L6.1 17.7M11.6 9.66L14.14 12.2"),
             null),
+        [ToolIconKind.DllInjection] = new(
+            StreamGeometry.Parse("M6 4H18A3 3 0 0 1 21 7V17A3 3 0 0 1 18 20H6A3 3 0 0 1 3 17V7A3 3 0 0 1 6 4ZM3.6 8.6H20.4M12 11.4V16.4M9.8 14.2L12 16.4L14.2 14.2"),
+            null),
+        [ToolIconKind.GameSettings] = new(
+            StreamGeometry.Parse("M3.6 6.6H20.4M3.6 12H20.4M3.6 17.4H20.4"),
+            StreamGeometry.Parse("M6.9 6.6A2.3 2.3 0 1 1 11.5 6.6A2.3 2.3 0 1 1 6.9 6.6ZM12.7 12A2.3 2.3 0 1 1 17.3 12A2.3 2.3 0 1 1 12.7 12ZM5.3 17.4A2.3 2.3 0 1 1 9.9 17.4A2.3 2.3 0 1 1 5.3 17.4Z")),
     };
 
     public static ToolIconGeometry? Get(ToolIconKind kind) =>

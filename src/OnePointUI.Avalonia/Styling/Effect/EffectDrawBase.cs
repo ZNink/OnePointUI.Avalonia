@@ -60,6 +60,7 @@ public abstract class EffectDrawBase : CompositionCustomVisualHandler
     protected float AnimationSpeedScale { get; set; } = 0.1f;
     protected ThemeVariant ActiveVariant { get; private set; } = ThemeVariant.Light;
     protected float AnimationSeconds => (float)_animationTick.Elapsed.TotalSeconds;
+    protected double AnimationElapsedSeconds => _animationTick.Elapsed.TotalSeconds;
 
     public override void OnRender(ImmediateDrawingContext context)
     {
@@ -136,8 +137,8 @@ public abstract class EffectDrawBase : CompositionCustomVisualHandler
 
     protected SKShader? EffectWithUniforms(SkiaEffect? effect, float alpha = 1f)
     {
-        return effect?.ToShaderWithUniforms(AnimationSeconds, ActiveVariant, GetRenderBounds(), AnimationSpeedScale,
-            alpha);
+        return effect?.ToShaderWithUniforms(AnimationElapsedSeconds, ActiveVariant, GetRenderBounds(),
+            AnimationSpeedScale, alpha);
     }
 
     protected SKShader? EffectWithCustomUniforms(Func<SKRuntimeEffect, SKRuntimeEffectUniforms> uniformFactory,
@@ -149,7 +150,7 @@ public abstract class EffectDrawBase : CompositionCustomVisualHandler
     protected SKShader? EffectWithCustomUniforms(SkiaEffect? effect,
         Func<SKRuntimeEffect, SKRuntimeEffectUniforms> uniformFactory, float alpha = 1f)
     {
-        return effect?.ToShaderWithCustomUniforms(uniformFactory, AnimationSeconds, GetRenderBounds(),
+        return effect?.ToShaderWithCustomUniforms(uniformFactory, AnimationElapsedSeconds, GetRenderBounds(),
             AnimationSpeedScale, alpha);
     }
 
