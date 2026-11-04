@@ -3,3 +3,6 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+# 临时验证构建的产物目录（dotnet build -o artifacts/verifybin），
+# 6 个文件 2.6MB，重新构建即可复现。
+artifacts/
