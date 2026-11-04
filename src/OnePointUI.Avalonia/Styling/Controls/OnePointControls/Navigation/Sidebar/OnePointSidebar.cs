@@ -2,9 +2,12 @@ using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Automation.Peers;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 
 namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation.Sidebar;
 
@@ -93,7 +96,11 @@ public class OnePointSidebar : ItemsControl
     {
         AutomationProperties.SetControlTypeOverride(this, AutomationControlType.List);
         AddHandler(Button.ClickEvent, OnItemClick, RoutingStrategies.Bubble);
+        Items.CollectionChanged += (_, _) => QueueSelectionApply();
     }
+
+    private bool _isAttached;
+    private bool _selectionApplyQueued;
 
     /// <summary>选中项变化。宿主页面切换逻辑可订阅该事件，无需重建导航项。</summary>
     public event EventHandler<OnePointSidebarSelectionChangedEventArgs>? SelectionChanged;
@@ -159,7 +166,21 @@ public class OnePointSidebar : ItemsControl
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        _isAttached = true;
         ApplySelection();
+        QueueSelectionApply();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        _isAttached = false;
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        base.OnApplyTemplate(e);
+        QueueSelectionApply();
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -169,6 +190,7 @@ public class OnePointSidebar : ItemsControl
         if (change.Property == SelectedKeyProperty)
         {
             ApplySelection();
+            QueueSelectionApply();
         }
         else if (change.Property == FooterProperty)
         {
@@ -283,6 +305,31 @@ public class OnePointSidebar : ItemsControl
                               && !string.IsNullOrEmpty(item.NavigationKey)
                               && string.Equals(item.NavigationKey, key, StringComparison.Ordinal);
         }
+    }
+
+    /// <summary>
+    /// 模板和 ItemsPresenter 重新生成后再同步一次。页面切换期间容器可能先被
+    /// 卸载，若只在 SelectedKey 变化时设置 IsSelected，重新挂载的按钮会保留
+    /// 默认未选中伪类。
+    /// </summary>
+    private void QueueSelectionApply()
+    {
+        if (_selectionApplyQueued)
+        {
+            return;
+        }
+
+        _selectionApplyQueued = true;
+        Dispatcher.UIThread.Post(
+            () =>
+            {
+                _selectionApplyQueued = false;
+                if (_isAttached)
+                {
+                    ApplySelection();
+                }
+            },
+            DispatcherPriority.Loaded);
     }
 
     private void MoveFocus(int delta)

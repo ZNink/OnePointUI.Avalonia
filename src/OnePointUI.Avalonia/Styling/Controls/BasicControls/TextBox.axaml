@@ -25,11 +25,20 @@
 
         <Setter Property="Template">
             <ControlTemplate>
+                <!--
+                    模板根永远铺满控件槽位。
+                    控件自身的 VerticalAlignment / HorizontalAlignment 决定的是
+                    「控件在父级里怎么摆」，不是「控件内部的背景怎么拉伸」。
+                    早期版本把 VerticalAlignment 透传到了根 Grid 与背景框上，
+                    于是外部一旦写 VerticalAlignment="Center"，
+                    根 Grid 就按内容高度收缩、背景框再按自身内容高度收缩，
+                    最终只剩一条 1px 的横线 —— 输入框看起来只剩一条线。
+                -->
                 <Grid HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                      VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                      VerticalAlignment="Stretch">
                     <Border Name="Path_BackgroundBorder"
                             HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                            VerticalAlignment="Stretch"
                             BorderThickness="1"
                             BorderBrush="{DynamicResource PrimaryBorderBrush}"
                             CornerRadius="{TemplateBinding CornerRadius}"

@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OnePointUI.Avalonia.Styling.Controls.OnePointControls.Adaptive;
+using OnePointUI.Avalonia.Styling.Controls.OnePointControls.Navigation;
 
 namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls;
 
@@ -27,7 +28,7 @@ namespace OnePointUI.Avalonia.Styling.Controls.OnePointControls;
 /// 进入过动态样式后条目宽度由控件托管（实测自然宽度 ↔ <see cref="CollapsedItemWidth"/>），
 /// 内容（本地化文案、Glyph）变化时会自动重新测量，不会裁切文本。</para>
 /// </remarks>
-public class SegmentedButton : ListBox
+public class SegmentedButton : SelectionStateListBox
 {
     /// <summary>动态样式生效时宿主上的伪类，供样式与外部选择器使用。</summary>
     internal const string DynamicPseudoClass = ":dynamic";

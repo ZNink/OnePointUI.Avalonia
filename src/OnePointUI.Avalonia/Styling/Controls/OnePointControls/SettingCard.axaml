@@ -416,7 +416,8 @@
                                                            HorizontalAlignment="Left" />
 
                                         <StackPanel Grid.Column="1"
-                                                    VerticalAlignment="Center">
+                                                    VerticalAlignment="Center"
+                                                    Spacing="2">
                                             <ContentPresenter Content="{TemplateBinding Header}">
                                                 <ContentPresenter.Styles>
                                                     <Style Selector="TextBlock">

@@ -132,6 +132,7 @@
                         <controls:FontIcon Name="PART_Icon"
                                            Grid.Column="0"
                                            Glyph="{TemplateBinding Glyph}"
+                                           Foreground="{TemplateBinding Foreground}"
                                            FontSize="14"
                                            Margin="0,0,8,0"
                                            VerticalAlignment="Center"
@@ -161,6 +162,7 @@
                         </Panel.Transitions>
                         <controls:FontIcon Name="PART_CompactIcon"
                                            Glyph="{TemplateBinding Glyph}"
+                                           Foreground="{TemplateBinding Foreground}"
                                            FontSize="14"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
@@ -213,6 +215,9 @@
         </Style>
 
         <!-- 高亮样式：强调色表面 + 高对比前景，视觉语言与 Button.Accent 一致（无描边） -->
+        <Style Selector="^:highlighted">
+            <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+        </Style>
         <Style Selector="^:highlighted /template/ Border#Path_Border">
             <Setter Property="Background" Value="{DynamicResource AccentBackgroundBrush}" />
         </Style>
@@ -226,6 +231,16 @@
         </Style>
 
         <Style Selector="^:highlighted /template/ controls|FontIcon">
+            <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+        </Style>
+
+        <!-- 模板中的两个图标宿主显式绑定高亮前景。仅按类型匹配在部分 Avalonia
+             主题/模板组合下会被 FontIcon 的默认样式覆盖，导致深色模式图标变黑而
+             文本仍保持高对比白色。按模板部件命名后，图标和文字使用同一画刷。 -->
+        <Style Selector="^:highlighted /template/ controls|FontIcon#PART_Icon">
+            <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+        </Style>
+        <Style Selector="^:highlighted /template/ controls|FontIcon#PART_CompactIcon">
             <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
         </Style>
 

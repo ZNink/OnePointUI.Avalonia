@@ -268,7 +268,11 @@ public class SkiaEffect
             Wrap(animationTime * (10.0 / 120.0), VoronoiHashPeriod),
             Wrap(animationTime * 0.35, VoronoiHashPeriod * SidebarCellSize),
             Wrap(animationTime * -0.22, VoronoiHashPeriod * SidebarCellSize),
-            Wrap(animationTime * 0.05, VoronoiTau));
+            // The upstream Voronoi background advances each cell's seed with
+            // roughly iTime * 0.5.  The previous 0.05 multiplier made the
+            // polygon field look frozen for several seconds, especially after
+            // the renderer was resumed from a paused window.
+            Wrap(animationTime * 0.5, VoronoiTau));
     }
 
     private static float Wrap(double value, double period)

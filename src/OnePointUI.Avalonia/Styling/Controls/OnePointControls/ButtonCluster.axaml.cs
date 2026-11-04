@@ -665,8 +665,8 @@ public class ButtonClusterItem : Button
     private const double DefaultCollapsedWidth = ButtonCluster.DefaultCollapsedItemWidth;
 
     private ButtonCluster? _host;
-    private Control? _fullIconHost;
-    private Control? _compactIconHost;
+    private FontIcon? _fullIconHost;
+    private FontIcon? _compactIconHost;
     private Control? _avatarHost;
     private TextBlock? _avatarText;
     private Grid? _fullRow;
@@ -695,6 +695,7 @@ public class ButtonClusterItem : Button
             item.PseudoClasses.Set(":highlighted", item.IsHighlighted);
             item._host?.InvalidatePrimary();
             item.Refresh();
+            item.SyncIconForeground();
         });
     }
 
@@ -726,13 +727,14 @@ public class ButtonClusterItem : Button
     {
         base.OnApplyTemplate(e);
 
-        _fullIconHost = e.NameScope.Find<Control>("PART_Icon");
-        _compactIconHost = e.NameScope.Find<Control>("PART_CompactIcon");
+        _fullIconHost = e.NameScope.Find<FontIcon>("PART_Icon");
+        _compactIconHost = e.NameScope.Find<FontIcon>("PART_CompactIcon");
         _avatarHost = e.NameScope.Find<Control>("PART_Avatar");
         _avatarText = e.NameScope.Find<TextBlock>("PART_AvatarText");
         _fullRow = e.NameScope.Find<Grid>("PART_FullRow");
         InvalidateNaturalWidth();
         UpdateIdentityVisuals(showText: !_compact);
+        SyncIconForeground();
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -760,6 +762,14 @@ public class ButtonClusterItem : Button
             or nameof(FontStyle))
         {
             InvalidateNaturalWidth();
+        }
+
+        // FontIcon 有自己的默认主题样式；在部分主题组合中它会覆盖模板里的
+        // Foreground 继承，导致高亮项出现“文字白、图标黑”。把两个图标宿主
+        // 与按钮当前前景直接同步，既覆盖高亮态，也跟随主题切换/禁用态刷新。
+        if (change.Property == ForegroundProperty)
+        {
+            SyncIconForeground();
         }
     }
 
@@ -1139,6 +1149,19 @@ public class ButtonClusterItem : Button
             {
                 _avatarText.Text = ComputeFallbackText();
             }
+        }
+    }
+
+    private void SyncIconForeground()
+    {
+        if (_fullIconHost is not null)
+        {
+            _fullIconHost.Foreground = Foreground;
+        }
+
+        if (_compactIconHost is not null)
+        {
+            _compactIconHost.Foreground = Foreground;
         }
     }
 
