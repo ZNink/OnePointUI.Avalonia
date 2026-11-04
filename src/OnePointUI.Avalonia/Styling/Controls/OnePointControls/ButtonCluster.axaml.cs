@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Layout;
@@ -667,6 +668,8 @@ public class ButtonClusterItem : Button
     private ButtonCluster? _host;
     private FontIcon? _fullIconHost;
     private FontIcon? _compactIconHost;
+    private ContentPresenter? _contentHost;
+    private TextBlock? _contentTextHost;
     private Control? _avatarHost;
     private TextBlock? _avatarText;
     private Grid? _fullRow;
@@ -688,14 +691,24 @@ public class ButtonClusterItem : Button
             (item, _) => item.OnIdentityChanged());
         GlyphProperty.Changed.AddClassHandler<ButtonClusterItem>(
             (item, _) => item.OnIdentityChanged());
-        ContentProperty.Changed.AddClassHandler<ButtonClusterItem>(
-            (item, _) => item.OnIdentityChanged());
+        ContentProperty.Changed.AddClassHandler<ButtonClusterItem>((item, _) =>
+        {
+            item.OnIdentityChanged();
+            item.RefreshContentTextHost();
+            item.SyncIconForeground();
+            Dispatcher.UIThread.Post(() =>
+            {
+                item.RefreshContentTextHost();
+                item.SyncIconForeground();
+            }, DispatcherPriority.Render);
+        });
         IsHighlightedProperty.Changed.AddClassHandler<ButtonClusterItem>((item, _) =>
         {
             item.PseudoClasses.Set(":highlighted", item.IsHighlighted);
             item._host?.InvalidatePrimary();
             item.Refresh();
             item.SyncIconForeground();
+            Dispatcher.UIThread.Post(item.SyncIconForeground, DispatcherPriority.Render);
         });
     }
 
@@ -729,12 +742,41 @@ public class ButtonClusterItem : Button
 
         _fullIconHost = e.NameScope.Find<FontIcon>("PART_Icon");
         _compactIconHost = e.NameScope.Find<FontIcon>("PART_CompactIcon");
+        _contentHost = e.NameScope.Find<ContentPresenter>("PART_Content");
         _avatarHost = e.NameScope.Find<Control>("PART_Avatar");
         _avatarText = e.NameScope.Find<TextBlock>("PART_AvatarText");
         _fullRow = e.NameScope.Find<Grid>("PART_FullRow");
+        RefreshContentTextHost();
         InvalidateNaturalWidth();
         UpdateIdentityVisuals(showText: !_compact);
         SyncIconForeground();
+        Dispatcher.UIThread.Post(() =>
+        {
+            RefreshContentTextHost();
+            SyncIconForeground();
+        }, DispatcherPriority.Render);
+    }
+
+    private void RefreshContentTextHost()
+    {
+        if (_contentTextHost is not null)
+        {
+            _contentTextHost.PropertyChanged -= ContentTextHost_PropertyChanged;
+        }
+
+        _contentTextHost = _contentHost?.GetVisualDescendants().OfType<TextBlock>().FirstOrDefault();
+        if (_contentTextHost is not null)
+        {
+            _contentTextHost.PropertyChanged += ContentTextHost_PropertyChanged;
+        }
+    }
+
+    private void ContentTextHost_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs change)
+    {
+        if (change.Property.Name == nameof(TextBlock.Foreground))
+        {
+            SyncIconForeground();
+        }
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -1154,14 +1196,20 @@ public class ButtonClusterItem : Button
 
     private void SyncIconForeground()
     {
+        // FontIcon has its own default foreground style. Match the realized text element,
+        // whose inherited brush is the final color the user sees, instead of an intermediate
+        // Button or ContentPresenter value.
+        var foreground = IsHighlighted && _contentTextHost is not null
+            ? _contentTextHost.Foreground
+            : Foreground;
         if (_fullIconHost is not null)
         {
-            _fullIconHost.Foreground = Foreground;
+            _fullIconHost.Foreground = foreground;
         }
 
         if (_compactIconHost is not null)
         {
-            _compactIconHost.Foreground = Foreground;
+            _compactIconHost.Foreground = foreground;
         }
     }
 

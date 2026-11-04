@@ -271,4 +271,7 @@
             <Setter Property="IsVisible" Value="False" />
         </Style>
     </Style>
+    <Style Selector="controls|ButtonClusterItem:highlighted">
+        <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+    </Style>
 </Styles>
