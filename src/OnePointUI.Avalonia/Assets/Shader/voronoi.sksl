@@ -25,11 +25,12 @@ vec2 seedOffset(vec2 id) {
     vec2 q = mod(id, HASH_PERIOD);
     vec2 h = hash22(q);
     vec2 h2 = hash22(q + 19.19);
-    float kx = 1.0 + floor(h.x * 4.0);
-    float ky = 1.0 + floor(h.y * 4.0);
-    vec2 phase = h2 * TAU;
+    float frequency = 1.0 + floor(h.x * 4.0);
+    float direction = h2.y < 0.5 ? -1.0 : 1.0;
+    float phase = h2.x * TAU;
     float amplitude = AMP_MIN + (AMP_MAX - AMP_MIN) * fract(h.y * 7.31);
-    return vec2(sin(iPhase * kx + phase.x), sin(iPhase * ky + phase.y)) * amplitude;
+    float angle = iPhase * frequency * direction + phase;
+    return vec2(cos(angle), sin(angle)) * amplitude;
 }
 
 vec4 main(vec2 fragCoord)

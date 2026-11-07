@@ -29,6 +29,7 @@ public class SkiaEffect
     private static readonly List<SkiaEffect> LoadedEffects = [];
     private const double VoronoiHashPeriod = 64.0;
     private const double VoronoiTau = 6.2831853;
+    private const double VoronoiPhaseSpeed = 0.08;
     private const double SidebarCellSize = 34.0;
     private static float[] _backgroundAlloc = new[] { 0.08f, 0.08f, 0.12f };
     private static float[] _backgroundAccentAlloc = new[] { 1.00f, 0.27f, 0.00f };
@@ -268,11 +269,11 @@ public class SkiaEffect
             Wrap(animationTime * (10.0 / 120.0), VoronoiHashPeriod),
             Wrap(animationTime * 0.35, VoronoiHashPeriod * SidebarCellSize),
             Wrap(animationTime * -0.22, VoronoiHashPeriod * SidebarCellSize),
-            // The upstream Voronoi background advances each cell's seed with
-            // roughly iTime * 0.5.  The previous 0.05 multiplier made the
-            // polygon field look frozen for several seconds, especially after
-            // the renderer was resumed from a paused window.
-            Wrap(animationTime * 0.5, VoronoiTau));
+            // Seed points follow full 2D orbits instead of reversing on each axis.
+            // Keep the bounded phase slow: at AnimationSpeedScale=2, the fastest
+            // 4x orbit completes a revolution in about 9.8 seconds rather than
+            // fluttering through one every 1.6 seconds.
+            Wrap(animationTime * VoronoiPhaseSpeed, VoronoiTau));
     }
 
     private static float Wrap(double value, double period)
