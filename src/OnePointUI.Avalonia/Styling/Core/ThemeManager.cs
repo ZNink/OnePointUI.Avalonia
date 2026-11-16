@@ -49,6 +49,17 @@ public class ThemeManager
     /// </summary>
     public ThemeVariant CurrentTheme => CurrentThemeVariant;
 
+    /// <summary>
+    ///     主题资源写回 <see cref="Application.Resources" /> 之后触发
+    /// </summary>
+    /// <remarks>
+    ///     主题字典是按同名键整体写回的，因此应用层基于这些键再派生的资源（例如按 Widget
+    ///     透明度重算的半透明画刷）会被覆盖成主题字典里的实色。订阅本事件可以在每次写回后
+    ///     立刻把派生资源重新盖回去；<see cref="SetTheme" /> 请求的变体与当前一致时不会触发
+    ///     <c>ActualThemeVariantChanged</c>，没有本事件就找不到重刷时机。
+    /// </remarks>
+    public event EventHandler? ThemeResourcesApplied;
+
     public static void Initialize(Application application)
     {
         if (_instance != null) return;
@@ -255,6 +266,17 @@ public class ThemeManager
         finally
         {
             _isApplyingThemeResources = false;
+        }
+
+        // 写回结束后通知派生资源重新覆盖。订阅方可能来自 UI 层，抛异常不该把一次换肤拆散，
+        // 这里兜住并打日志，避免主题切换中途崩在某个重刷回调里。
+        try
+        {
+            ThemeResourcesApplied?.Invoke(this, EventArgs.Empty);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine($@"主题资源写回后的派生资源刷新失败: {exception.Message}");
         }
     }
 
